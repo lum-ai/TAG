@@ -48,7 +48,7 @@ $(async () => {
   // Fonts
   // -----
   // Because the demo uses an externally-loaded font, we use the Web Font
-  // Loader to ensure that it is available before initialisation (so that we
+  // Loader to ensure that it is available before initialization (so that we
   // can calculate the dimensions of SVG Text elements accurately)
   const fontLoadPromise = new Promise((resolve, reject) => {
     WebFont.load({
@@ -63,29 +63,49 @@ $(async () => {
 
   await fontLoadPromise;
 
-  // -------------
-  // Basic example
-  // -------------
-  const $basicContainer = $("#basicContainer");
-  const basicTag = TAG.tag({
-    // The `container` parameter can take either the ID of the main element or
-    // the main element itself (as either a jQuery or native object)
-    container: $basicContainer,
 
-    // The initial data to load.
-    // Different formats might expect different types for `data`:
-    // E.g., the "odin" format expects the annotations as an
-    // (already-parsed) Object, while the "brat" format expects them as a raw
-    // String.
-    // See the full documentation for details.
-    data: require("../data/test-odin.json"),
-    format: "odin",
+  /**
+   * Initialize TAG instance for the given element ID and data file
+   * NOTE: elemId should be in form of "#id-name-here"
+   *
+   */
+  function loadTagForElem(elemId, annoData, dataFormat) {
+    console.log(elemId);
+    console.log(dataFormat);
+    const $elem = $(elemId);
+    TAG.tag({
+      // The `container` parameter can take either the ID of the main element or
+      // the main element itself (as either a jQuery or native object)
+      container: $elem,
 
-    // Overrides for default options
-    options: {
-      showTopArgLabels: true
-    }
-  });
+      // The initial data to load.
+      // Different formats might expect different types for `data`:
+      // E.g., the "odin" format expects the annotations as an
+      // (already-parsed) Object, while the "brat" format expects them as a raw
+      // String.
+      // See the full documentation for details.
+      data: annoData,
+      format: dataFormat,
+
+      // Overrides for default options
+      options: {
+        showTopArgLabels: true,
+        compactRows: true,
+        bottomLinkCategory: "universal-enhanced"
+      }
+    });
+  }
+
+  // Demo examples
+  // NOTE: require can't load data dynamically (ex. (require(filePath))
+  const ex1Data = require("../data/ex1.json");
+  loadTagForElem("#ex1", ex1Data, "odin");
+  const ex2Data = require("../data/ex2.json");
+  loadTagForElem("#ex2", ex2Data, "odin");
+  const ex3Data = require("../data/ex3.json");
+  loadTagForElem("#ex3", ex3Data, "odin");
+  const ex4Data = require("../data/ex2.json");
+  loadTagForElem("#ex4", ex4Data, "odin")
 
   // -------------------
   // Advanced/UI example
@@ -95,9 +115,9 @@ $(async () => {
     container: $uiContainer
   });
 
-  // Data can be loaded after initialisation using the `.loadData()` function,
+  // Data can be loaded after initialization using the `.loadData()` function,
   // or from a remote URL via the asynchronous `.loadUrlAsync()` function.
-  await uiTag.loadUrlAsync("data/sentence-1-odin.json", "odin");
+  await uiTag.loadUrlAsync("data/ex1.json", "odin");
 
   // --------------------------------------------------------------------------
 
@@ -536,7 +556,6 @@ $(async () => {
 
   // Debug
   window._ = require("lodash");
-  window.basicTag = basicTag;
   window.uiTag = uiTag;
   window.editor = editor;
   window.yaml = require("js-yaml");

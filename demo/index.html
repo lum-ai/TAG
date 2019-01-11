@@ -21,55 +21,45 @@
 </head>
 <body>
 <div class="container py-5">
-  <h2 class="mb-5">TextAnnotationGraphs (TAG) Demo</h2>
+  <h2 class="mb-5">TAG Demo</h2>
 
   <div class="row mb-3">
     <div class="col">
       <h4>Documentation</h4>
       <p>
-        See the API documentation <a href="/docs" target="_blank">here</a>.
+        See the API documentation <a href="https://gh.lum.ai/TAG/docs" target="_blank">here</a>.
       </p>
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col">
+      <h4>Sample Extractions</h4>
+      <div>
+        <h5>Example 1</h5>
+        <div id="ex1" style="border: solid 1px lightgray"></div>
+      </div>
+
+      <div>
+        <h5>Example 2</h5>
+        <div id="ex2" style="border: solid 1px lightgray"></div>
+      </div>
+
+      <div>
+        <h5>Example 3</h5>
+        <div id="ex3" style="border: solid 1px lightgray"></div>
+      </div>
+
+      <div>
+        <h5>Example 4</h5>
+        <div id="ex4" style="border: solid 1px lightgray"></div>
+      </div>
     </div>
   </div>
 
   <div class="row mb-5">
     <div class="col">
-      <h4>Basic example</h4>
-      <p>
-        For a minimal embedded TAG visualisation, simply specify the container element, the annotation data to load, and
-        the format that the data is in.
-      </p>
-      <p>
-        See the full source for this example in the "Basic example" section of
-        <code class="bg-light">src/demo.js</code>.
-      </p>
-
-      <pre class="mb-4">
-<code class="language-javascript">const tag = TAG.tag({
-  container: "container-id",
-  data: {...},
-  format: "odin",
-  options: {
-    showTopArgLabels: true
-  }
-});</code></pre>
-
-      <div id="basicContainer" style="border: solid 1px lightgray"></div>
-
-    </div>
-  </div>
-
-  <div class="row mb-5">
-    <div class="col">
-      <h4>Extended UI example</h4>
-      <p>
-        It is also possible to build a UI around the TAG visualisation using the various API functions.
-      </p>
-      <p>
-        This example uses Bootstrap 4 styles and components. See the source in the "Advanced/UI example" section of
-        <code class="bg-light">src/demo.js</code>.
-      </p>
-
+      <h4>Extended UI</h4>
       <!-- Control buttons -->
       <div class="mb-2">
         <!-- Sample dataset loader -->
@@ -79,45 +69,17 @@
             Load sample dataset
           </button>
           <div class="dropdown-menu">
-            <a class="dropdown-item tag-dataset" data-path="data/test-brat.ann" data-format="brat" href="#">
-              Brat format test (test-brat.ann)
+            <a class="dropdown-item tag-dataset" data-path="data/ex1.json" data-format="odin" href="#">
+              Example 1 (ex1.json)
             </a>
-            <a class="dropdown-item tag-dataset" data-path="data/example1.ann" data-format="brat" href="#">
-              Morphology 1 (example1.ann)
+            <a class="dropdown-item tag-dataset" data-path="data/ex2.json" data-format="odin" href="#">
+              Example 2 (ex2.json)
             </a>
-            <a class="dropdown-item tag-dataset" data-path="data/example2.ann" data-format="brat" href="#">
-              Morphology 2 (example2.ann)
+            <a class="dropdown-item tag-dataset" data-path="data/ex3.json" data-format="odin" href="#">
+              Example 3 (ex3.json)
             </a>
-            <a class="dropdown-item tag-dataset" data-path="data/example3.ann" data-format="brat" href="#">
-              Brat event annotations (example3.ann)
-            </a>
-            <a class="dropdown-item tag-dataset" data-path="data/test-odin.json" data-format="odin"
-               href="#">
-              Odin format test (test-odin.json)
-            </a>
-            <a class="dropdown-item tag-dataset" data-path="data/sentence-1-odin.json" data-format="odin"
-               href="#">
-              Sentence 1 (sentence-1-odin.json)
-            </a>
-            <a class="dropdown-item tag-dataset" data-path="data/sentence-2-odin.json" data-format="odin"
-               href="#">
-              Sentence 2 (sentence-2-odin.json)
-            </a>
-            <a class="dropdown-item tag-dataset" data-path="data/sentence-3-odin.json" data-format="odin"
-               href="#">
-              Sentence 3 (sentence-3-odin.json)
-            </a>
-            <a class="dropdown-item tag-dataset" data-path="data/paragraph-1-odin.json" data-format="odin"
-               href="#">
-              Paragraph (paragraph-1-odin.json)
-            </a>
-            <a class="dropdown-item tag-dataset" data-path="data/passage-1-odin.json" data-format="odin"
-               href="#">
-              Passage 1 (passage-1-odin.json)
-            </a>
-            <a class="dropdown-item tag-dataset" data-path="data/passage-2-odin.json" data-format="odin"
-               href="#">
-              Passage 2 (passage-2-odin.json)
+            <a class="dropdown-item tag-dataset" data-path="data/ex4.json" data-format="odin" href="#">
+              Example 4 (ex4.json)
             </a>
           </div>
         </div>
@@ -286,7 +248,7 @@
 
         <!-- Taxonomy button/modal -->
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#tag-taxonomy">
-          Taxonomy/Colours
+          Taxonomy/Colors
         </button>
 
         <div class="modal" id="tag-taxonomy" tabindex="-1" role="dialog"
@@ -294,7 +256,7 @@
           <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
               <div class="modal-header">
-                <h5 class="modal-title" id="taxonomy-title">Taxonomy/Colours</h5>
+                <h5 class="modal-title" id="taxonomy-title">Taxonomy/Colors</h5>
                 <button type="button" class="close" data-dismiss="modal"
                         aria-label="Close">
                   <span aria-hidden="true">&times;</span>
