@@ -82,10 +82,6 @@ $(async () => {
    *   };
 
    */
-  const OdinParser = require("../../Parsers/odin");
-  const BratParser = require("../../Parsers/brat");
-  TAG.registerParser(new OdinParser(), "odin");
-  TAG.registerParser(new BratParser(), "brat");
 
   // -------------
   // Basic example
@@ -118,6 +114,8 @@ $(async () => {
   const uiTag = TAG.tag({
     container: $uiContainer
   });
+
+  window.uiTag = uiTag;
 
   // Data can be loaded after initialisation using the `.loadData()` function,
   // or from a remote URL via the asynchronous `.loadUrlAsync()` function.
@@ -245,7 +243,7 @@ $(async () => {
 
       $optionTopTags.append($option);
     }
-    $optionTopTags.on("change", () => {
+    $optionTopTags.off("change").on("change", () => {
       uiTag.setTopTagCategory($optionTopTags.val());
     });
 
@@ -267,7 +265,7 @@ $(async () => {
 
       $optionBottomTags.append($option);
     }
-    $optionBottomTags.on("change", () => {
+    $optionBottomTags.off("change").on("change", () => {
       uiTag.setBottomTagCategory($optionBottomTags.val());
     });
   }

@@ -18,11 +18,14 @@ class WordTag {
    * @param {Boolean} top - True if this WordTag should be drawn above the
    *     parent Word, false if it should be drawn below
    */
-  constructor(val, word, config, top = true) {
+  constructor(val, word, config, top = true, multiLayer = false, layerIndex = 0) {
     this.val = val;
     this.word = word;
     this.config = config;
     this.top = top;
+
+    this.multiLayer = multiLayer !== false;
+    this.layerIndex = layerIndex;
 
     if (!word.svg) {
       throw "Error: Trying to initialise WordTag on Word without SVG" +
@@ -79,9 +82,14 @@ class WordTag {
       newY =
         -this.word.textHeight -
         this.svgText.bbox().height -
-        this.config.wordTopTagPadding;
+        this.config.wordTopTagPadding - this.config.multiTagLayerPadding * this.layerIndex;
     } else {
-      newY = this.config.wordBottomTagPadding;
+      if (!this.multiLayer) {
+        newY = this.config.wordBottomTagPadding;
+      }
+      else {
+        newY = this.config.wordBottomTagPadding + this.config.multiTagLayerPadding * this.layerIndex;
+      }
     }
     this.svgText.y(newY);
     this.line.cy((this.svgText.bbox().y2 + this.word.svgText.bbox().y) / 2);

@@ -102,6 +102,8 @@ class Config {
 
     // Category of top/bottom tags to show
     this.topTagCategory = "default";
+    this.topTagCategories = ["default"];
+
     this.bottomTagCategory = "POS";
 
     // Lock Rows to minimum height?
@@ -146,6 +148,8 @@ class Config {
 
     // Vertical padding between Words and WordTags drawn below them
     this.wordBottomTagPadding = 0;
+
+    this.multiTagLayerPadding = 15;
 
     // For WordTags drawn above Words, the height of the connecting
     // line/brace between the Word and the WordTag
