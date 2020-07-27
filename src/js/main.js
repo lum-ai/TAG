@@ -665,11 +665,12 @@ class Main {
       this.rowManager.resizeRow(event.detail.object.idx, event.detail.y);
     });
 
-    // svg.on('label-updated', function(e) {
-    //   // TODO: so so incomplete
-    //   let color = tm.getColor(e.detail.label, e.detail.object);
-    //   e.detail.object.node.style.fill = color;
-    // });
+    this.svg.on("label-updated", (e) => {
+      console.log(e);
+      // // TODO: so so incomplete
+      // let color = tm.getColor(e.detail.label, e.detail.object);
+      // e.detail.object.node.style.fill = color;
+    });
 
     this.svg.on("word-move-start", () => {
       this.links.forEach((link) => {

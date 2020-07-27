@@ -45,7 +45,7 @@ module.exports = (function() {
     if (activeObject && activeObject.isEditing) {
       let text = activeObject.text();
       if (text && !(activeObject instanceof Link)) {
-        _svg.fire("label-updated", { object: text, label: text.text() });
+        _svg.fire("label-updated", { object: text, label: text.text(), activeObject });
       }
       activeObject.stopEditing();
       activeObject = null;
