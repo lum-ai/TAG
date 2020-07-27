@@ -66,7 +66,7 @@
     "rimraf": "^2.6.3",
     "sass": "^1.14.3",
     "svg.draggable.js": "^2.2.1",
-    "svg.js": "^2.6.3",
+    "svg.js": "^3.0.16",
     "tasksfile": "^5.1.0",
     "tinyify": "^2.4.3",
     "watchify": "^3.11.1"
