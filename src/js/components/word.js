@@ -137,8 +137,6 @@ class Word {
         this.removeTopTagCategory(category);
       }
 
-      // Since one of the Word's tags has changed, recalculate/realign its
-      // bounding box
       this.alignBox();
     }
   }
@@ -149,16 +147,17 @@ class Word {
     const topTagKeys = Object.keys(this.topTags);
 
     if (topTagKeys.length > 1) {
-      topTagKeys.forEach((localTopTagKey) => {
-        this.topTags[localTopTagKey].remove();
-      });
+      const tag = this.topTags[topTagKey];
+
+      if (tag) {
+        tag.remove();
+      }
 
       delete this.topTags[topTagKey];
 
       this._redrawTopTags();
 
       this.alignBox();
-
     }
   }
 
@@ -168,15 +167,13 @@ class Word {
     currentDisplayedTags.forEach((topTagKey, i) => {
       const currentWordTag = this.topTags[topTagKey];
 
-      this.bottomTags[topTagKey] = new WordTag(
-        currentWordTag.val,
-        this,
-        this.config,
-        true,
-        true,
-        i
-      );
+      if (currentWordTag !== null) {
+        currentWordTag.layerIndex = i;
+        currentWordTag.draw();
+      }
     });
+
+    this.alignBox();
   }
 
   _redrawBottomTags() {
@@ -185,15 +182,13 @@ class Word {
     currentDisplayedTags.forEach((bottomTagKey, i) => {
       const currentWordTag = this.bottomTags[bottomTagKey];
 
-      this.bottomTags[bottomTagKey] = new WordTag(
-        currentWordTag.val,
-        this,
-        this.config,
-        false,
-        true,
-        i
-      );
+      if (currentWordTag !== null) {
+        currentWordTag.layerIndex = i;
+        currentWordTag.draw();
+      }
     });
+
+    this.alignBox();
   }
 
   /**
@@ -240,9 +235,11 @@ class Word {
     const bottomTagKeys = Object.keys(this.bottomTags);
 
     if (bottomTagKeys.length > 1) {
-      bottomTagKeys.forEach((localBottomTagKey) => {
-        this.bottomTags[localBottomTagKey].remove();
-      });
+      const tag = this.bottomTags[bottomTagKey];
+
+      if (tag) {
+        tag.remove();
+      }
 
       delete this.bottomTags[bottomTagKey];
 
@@ -308,6 +305,11 @@ class Word {
         );
       }
     }
+    else {
+      const topTagKey = `empty`;
+      this.topTags[topTagKey] = null;
+    }
+
 
     if (this.bottomTagCategory) {
       const displayTag = this.registeredTags[this.bottomTagCategory];
@@ -426,8 +428,16 @@ class Word {
     this.svgText.move(-currentBox.x, -currentBox.height);
     this._textBbox = this.svgText.bbox();
 
-    if (this.topTag) {
-      this.topTag.centre();
+    const currentDisplayedTopTags = Object.keys(this.topTags);
+
+    if (currentDisplayedTopTags.length > 0) {
+      currentDisplayedTopTags.forEach((displayedTag) => {
+        const tag = this.topTags[displayedTag];
+
+        if (tag) {
+          tag.centre();
+        }
+      });
     }
 
     const currentDisplayedBottomTags = Object.keys(this.bottomTags);
