@@ -111,6 +111,12 @@ class Word {
    * @param {String} category
    */
   setTopTagCategory(category) {
+    if (!this.registeredTags[category]) {
+      return;
+    }
+
+    this.topTagCategory = category;
+
     if (this.initialised) {
       const displayTag = category in this.registeredTags ? this.registeredTags[category] : "-";
       const topTagKey = `${category}-${displayTag}`;
@@ -135,16 +141,42 @@ class Word {
       // bounding box
       this.alignBox();
     }
-
-    if (this.config) {
-      if (!this.config.topTagCategories.includes(category)) {
-        this.config.topTagCategories.add(category);
-      }
-    }
   }
 
   removeTopTagCategory(category) {
+    const displayTag = category in this.registeredTags ? this.registeredTags[category] : "-";
+    const topTagKey = `${category}-${displayTag}`;
+    const topTagKeys = Object.keys(this.topTags);
 
+    if (topTagKeys.length > 1) {
+      topTagKeys.forEach((localTopTagKey) => {
+        this.topTags[localTopTagKey].remove();
+      });
+
+      delete this.topTags[topTagKey];
+
+      this._redrawTopTags();
+
+      this.alignBox();
+
+    }
+  }
+
+  _redrawTopTags() {
+    const currentDisplayedTags = Object.keys(this.topTags);
+
+    currentDisplayedTags.forEach((topTagKey, i) => {
+      const currentWordTag = this.topTags[topTagKey];
+
+      this.bottomTags[topTagKey] = new WordTag(
+        currentWordTag.val,
+        this,
+        this.config,
+        true,
+        true,
+        i
+      );
+    });
   }
 
   _redrawBottomTags() {
@@ -262,23 +294,19 @@ class Word {
 
     // ------------------------
     // Draw in this Word's tags
-    this.topTagCategories = this.config.topTagCategories;
+    if (this.topTagCategory) {
+      const displayTag = this.registeredTags[this.topTagCategory];
 
-    if (this.topTagCategories.length > 0) {
-      this.topTagCategories.forEach((topTagCategory) => {
-        const displayTag = this.registeredTags[topTagCategory];
-
-        if (displayTag) {
-          this.topTags[displayTag] = new WordTag(
-            displayTag,
-            this,
-            this.config,
-            true,
-            true,
-            0
-          );
-        }
-      });
+      if (displayTag) {
+        this.topTags[displayTag] = new WordTag(
+          displayTag,
+          this,
+          this.config,
+          true,
+          true,
+          0
+        );
+      }
     }
 
     if (this.bottomTagCategory) {

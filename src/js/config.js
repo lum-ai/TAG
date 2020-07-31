@@ -102,7 +102,6 @@ class Config {
 
     // Category of top/bottom tags to show
     this.topTagCategory = "default";
-    this.topTagCategories = ["default"];
 
     this.bottomTagCategory = "POS";
 

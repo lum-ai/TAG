@@ -124,7 +124,7 @@ class WordTag {
    * this is a top WordTag.
    */
   drawTagLine() {
-    if (!this.top) {
+    if (!this.top || this.layerIndex > 0) {
       return;
     }
 
