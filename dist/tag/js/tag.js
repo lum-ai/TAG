@@ -357,7 +357,7 @@ var _default = BratParser;
 exports["default"] = _default;
 module.exports = BratParser;
 
-},{"./components/Link":3,"./components/Token":5,"@babel/runtime/helpers/classCallCheck":10,"@babel/runtime/helpers/createClass":11,"@babel/runtime/helpers/interopRequireDefault":12,"@babel/runtime/helpers/slicedToArray":16}],2:[function(_dereq_,module,exports){
+},{"./components/Link":3,"./components/Token":5,"@babel/runtime/helpers/classCallCheck":11,"@babel/runtime/helpers/createClass":12,"@babel/runtime/helpers/interopRequireDefault":13,"@babel/runtime/helpers/slicedToArray":17}],2:[function(_dereq_,module,exports){
 "use strict";
 
 var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
@@ -391,7 +391,7 @@ function Label(val, token) {
 var _default = Label;
 exports["default"] = _default;
 
-},{"@babel/runtime/helpers/classCallCheck":10,"@babel/runtime/helpers/interopRequireDefault":12}],3:[function(_dereq_,module,exports){
+},{"@babel/runtime/helpers/classCallCheck":11,"@babel/runtime/helpers/interopRequireDefault":13}],3:[function(_dereq_,module,exports){
 "use strict";
 
 var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
@@ -454,7 +454,7 @@ function Link(eventId, trigger, args, relType) {
 var _default = Link;
 exports["default"] = _default;
 
-},{"@babel/runtime/helpers/classCallCheck":10,"@babel/runtime/helpers/interopRequireDefault":12}],4:[function(_dereq_,module,exports){
+},{"@babel/runtime/helpers/classCallCheck":11,"@babel/runtime/helpers/interopRequireDefault":13}],4:[function(_dereq_,module,exports){
 "use strict";
 
 var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
@@ -514,7 +514,7 @@ var LongLabel = /*#__PURE__*/function () {
 var _default = LongLabel;
 exports["default"] = _default;
 
-},{"@babel/runtime/helpers/classCallCheck":10,"@babel/runtime/helpers/createClass":11,"@babel/runtime/helpers/interopRequireDefault":12}],5:[function(_dereq_,module,exports){
+},{"@babel/runtime/helpers/classCallCheck":11,"@babel/runtime/helpers/createClass":12,"@babel/runtime/helpers/interopRequireDefault":13}],5:[function(_dereq_,module,exports){
 "use strict";
 
 var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
@@ -625,7 +625,7 @@ var Token = /*#__PURE__*/function () {
 var _default = Token;
 exports["default"] = _default;
 
-},{"./Label":2,"@babel/runtime/helpers/classCallCheck":10,"@babel/runtime/helpers/createClass":11,"@babel/runtime/helpers/interopRequireDefault":12}],6:[function(_dereq_,module,exports){
+},{"./Label":2,"@babel/runtime/helpers/classCallCheck":11,"@babel/runtime/helpers/createClass":12,"@babel/runtime/helpers/interopRequireDefault":13}],6:[function(_dereq_,module,exports){
 "use strict";
 
 var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
@@ -1004,7 +1004,172 @@ var _default = OdinParser;
 exports["default"] = _default;
 module.exports = OdinParser;
 
-},{"./components/Link":3,"./components/LongLabel":4,"./components/Token":5,"@babel/runtime/helpers/classCallCheck":10,"@babel/runtime/helpers/createClass":11,"@babel/runtime/helpers/interopRequireDefault":12,"@babel/runtime/helpers/slicedToArray":16}],7:[function(_dereq_,module,exports){
+},{"./components/Link":3,"./components/LongLabel":4,"./components/Token":5,"@babel/runtime/helpers/classCallCheck":11,"@babel/runtime/helpers/createClass":12,"@babel/runtime/helpers/interopRequireDefault":13,"@babel/runtime/helpers/slicedToArray":17}],7:[function(_dereq_,module,exports){
+"use strict";
+
+var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = void 0;
+
+var _classCallCheck2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/classCallCheck"));
+
+var _createClass2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/createClass"));
+
+var _Token = _interopRequireDefault(_dereq_("./components/Token"));
+
+var _Link = _interopRequireDefault(_dereq_("./components/Link"));
+
+/**
+ * Odinson parser class
+ */
+var CustomParser = /*#__PURE__*/function () {
+  /**
+  * The class constructor
+  */
+  function CustomParser() {
+    (0, _classCallCheck2["default"])(this, CustomParser);
+    // class members, all private
+
+    /** @private */
+    this.data = {
+      tokens: [],
+      links: []
+    };
+    /** @private */
+
+    this.parsedDocuments = {};
+    /** @private */
+
+    this.lastTokenIdx = -1;
+  }
+  /**
+  * Main function which parses the sentence data. This works with both an
+  * array (from which it will extract the first entry) and a single object.
+  *
+  * @public
+  * @param {Array|Object} dataObject Sentence data consisting of an array or single object
+  *
+  * @returns {Object} Object containing the parsed tokens and the links
+  */
+
+
+  (0, _createClass2["default"])(CustomParser, [{
+    key: "parse",
+    value: function parse(dataObject) {
+      this.reset();
+      var toParse = Array.isArray(dataObject) ? dataObject[0] : dataObject;
+      this.parsedDocuments[0] = this._parseSentence(toParse, Date.now());
+      return this.data;
+    }
+    /**
+    * Reinitialize all class properties.
+    *
+    * @private
+    */
+
+  }, {
+    key: "reset",
+    value: function reset() {
+      this.data = {
+        tokens: [],
+        links: []
+      };
+      this.parsedDocuments = {};
+      this.lastTokenIdx = -1;
+    }
+    /**
+    * Method to parse and extract tokens and links from a single sentence.
+    *
+    * @param {Object} sentence Sentence object
+    * @param {String} docId The sentence document id
+    *
+    * @returns {Object} The document object that contains parsed tokens and links.
+    */
+
+  }, {
+    key: "_parseSentence",
+    value: function _parseSentence(sentence, docId) {
+      var thisDocument = {};
+      var sentenceId = "sentence-".concat(Date.now());
+      thisDocument.sentences = [];
+
+      var createLinkInstance = function createLinkInstance(localDocId, sentenceIdLocal, type, index, edge, sentenceData) {
+        return new _Link["default"]("".concat(localDocId, "-").concat(sentenceIdLocal, "-").concat(type, "-").concat(index), sentenceData[edge[0]], [{
+          anchor: sentenceData[edge[1]],
+          type: edge[2]
+        }], edge[2], type);
+      };
+
+      var thisSentence = [];
+      var sentenceFields = {};
+      var sentenceGraph = null;
+
+      for (var i = 0; i < sentence.fields.length; i += 1) {
+        var field = sentence.fields[i];
+
+        if (field.name !== "dependencies") {
+          sentenceFields[field.name] = field.tokens;
+        } else {
+          sentenceGraph = field;
+        }
+      }
+
+      for (var _i = 0; _i < sentenceFields.word.length; _i += 1) {
+        var thisToken = new _Token["default"](sentenceFields.word[_i], _i + this.lastTokenIdx + 1);
+
+        if (sentenceFields.raw) {
+          thisToken.registerLabel("raw", sentenceFields.raw[_i]);
+        }
+
+        if (sentenceFields.tag) {
+          thisToken.registerLabel("POS", sentenceFields.tag[_i]);
+        }
+
+        if (sentenceFields.lemma) {
+          thisToken.registerLabel("lemma", sentenceFields.lemma[_i]);
+        }
+
+        if (sentenceFields.entity) {
+          thisToken.registerLabel("entity", sentenceFields.entity[_i]);
+          thisToken.registerLabel("default", sentenceFields.entity[_i]);
+        }
+
+        if (sentenceFields.norms) {
+          thisToken.registerLabel("norm", sentenceFields.norms[_i]);
+        }
+
+        if (sentenceFields.chunk) {
+          thisToken.registerLabel("chunk", sentenceFields.chunk[_i]);
+        }
+
+        thisSentence.push(thisToken);
+        this.data.tokens.push(thisToken);
+      }
+
+      this.lastTokenIdx += sentence.numTokens;
+
+      if (sentenceGraph) {
+        for (var _i2 = 0; _i2 < sentenceGraph.edges.length; _i2 += 1) {
+          var edge = sentenceGraph.edges[_i2];
+          this.data.links.push(createLinkInstance(docId, sentenceId, "universal-basic", _i2, edge, thisSentence));
+          this.data.links.push(createLinkInstance(docId, sentenceId, "universal-enhanced", _i2, edge, thisSentence));
+        }
+      }
+
+      thisDocument.sentences.push(thisSentence);
+      return thisDocument;
+    }
+  }]);
+  return CustomParser;
+}();
+
+var _default = CustomParser;
+exports["default"] = _default;
+
+},{"./components/Link":3,"./components/Token":5,"@babel/runtime/helpers/classCallCheck":11,"@babel/runtime/helpers/createClass":12,"@babel/runtime/helpers/interopRequireDefault":13}],8:[function(_dereq_,module,exports){
 function _arrayLikeToArray(arr, len) {
   if (len == null || len > arr.length) len = arr.length;
 
@@ -1016,13 +1181,13 @@ function _arrayLikeToArray(arr, len) {
 }
 
 module.exports = _arrayLikeToArray;
-},{}],8:[function(_dereq_,module,exports){
+},{}],9:[function(_dereq_,module,exports){
 function _arrayWithHoles(arr) {
   if (Array.isArray(arr)) return arr;
 }
 
 module.exports = _arrayWithHoles;
-},{}],9:[function(_dereq_,module,exports){
+},{}],10:[function(_dereq_,module,exports){
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
   try {
     var info = gen[key](arg);
@@ -1060,7 +1225,7 @@ function _asyncToGenerator(fn) {
 }
 
 module.exports = _asyncToGenerator;
-},{}],10:[function(_dereq_,module,exports){
+},{}],11:[function(_dereq_,module,exports){
 function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
@@ -1068,7 +1233,7 @@ function _classCallCheck(instance, Constructor) {
 }
 
 module.exports = _classCallCheck;
-},{}],11:[function(_dereq_,module,exports){
+},{}],12:[function(_dereq_,module,exports){
 function _defineProperties(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
@@ -1086,7 +1251,7 @@ function _createClass(Constructor, protoProps, staticProps) {
 }
 
 module.exports = _createClass;
-},{}],12:[function(_dereq_,module,exports){
+},{}],13:[function(_dereq_,module,exports){
 function _interopRequireDefault(obj) {
   return obj && obj.__esModule ? obj : {
     "default": obj
@@ -1094,7 +1259,7 @@ function _interopRequireDefault(obj) {
 }
 
 module.exports = _interopRequireDefault;
-},{}],13:[function(_dereq_,module,exports){
+},{}],14:[function(_dereq_,module,exports){
 var _typeof = _dereq_("../helpers/typeof");
 
 function _getRequireWildcardCache() {
@@ -1150,7 +1315,7 @@ function _interopRequireWildcard(obj) {
 }
 
 module.exports = _interopRequireWildcard;
-},{"../helpers/typeof":17}],14:[function(_dereq_,module,exports){
+},{"../helpers/typeof":18}],15:[function(_dereq_,module,exports){
 function _iterableToArrayLimit(arr, i) {
   if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;
   var _arr = [];
@@ -1179,13 +1344,13 @@ function _iterableToArrayLimit(arr, i) {
 }
 
 module.exports = _iterableToArrayLimit;
-},{}],15:[function(_dereq_,module,exports){
+},{}],16:[function(_dereq_,module,exports){
 function _nonIterableRest() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
 
 module.exports = _nonIterableRest;
-},{}],16:[function(_dereq_,module,exports){
+},{}],17:[function(_dereq_,module,exports){
 var arrayWithHoles = _dereq_("./arrayWithHoles");
 
 var iterableToArrayLimit = _dereq_("./iterableToArrayLimit");
@@ -1199,7 +1364,7 @@ function _slicedToArray(arr, i) {
 }
 
 module.exports = _slicedToArray;
-},{"./arrayWithHoles":8,"./iterableToArrayLimit":14,"./nonIterableRest":15,"./unsupportedIterableToArray":18}],17:[function(_dereq_,module,exports){
+},{"./arrayWithHoles":9,"./iterableToArrayLimit":15,"./nonIterableRest":16,"./unsupportedIterableToArray":19}],18:[function(_dereq_,module,exports){
 function _typeof(obj) {
   "@babel/helpers - typeof";
 
@@ -1217,7 +1382,7 @@ function _typeof(obj) {
 }
 
 module.exports = _typeof;
-},{}],18:[function(_dereq_,module,exports){
+},{}],19:[function(_dereq_,module,exports){
 var arrayLikeToArray = _dereq_("./arrayLikeToArray");
 
 function _unsupportedIterableToArray(o, minLen) {
@@ -1230,10 +1395,10 @@ function _unsupportedIterableToArray(o, minLen) {
 }
 
 module.exports = _unsupportedIterableToArray;
-},{"./arrayLikeToArray":7}],19:[function(_dereq_,module,exports){
+},{"./arrayLikeToArray":8}],20:[function(_dereq_,module,exports){
 module.exports = _dereq_("regenerator-runtime");
 
-},{"regenerator-runtime":54}],20:[function(_dereq_,module,exports){
+},{"regenerator-runtime":55}],21:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1330,7 +1495,7 @@ function autobind() {
 
   return boundMethod.apply(void 0, arguments);
 }
-},{}],21:[function(_dereq_,module,exports){
+},{}],22:[function(_dereq_,module,exports){
 /*!
  * jQuery JavaScript Library v3.5.1
  * https://jquery.com/
@@ -12204,7 +12369,7 @@ if ( typeof noGlobal === "undefined" ) {
 return jQuery;
 } );
 
-},{}],22:[function(_dereq_,module,exports){
+},{}],23:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -12213,7 +12378,7 @@ var yaml = _dereq_('./lib/js-yaml.js');
 
 module.exports = yaml;
 
-},{"./lib/js-yaml.js":23}],23:[function(_dereq_,module,exports){
+},{"./lib/js-yaml.js":24}],24:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -12254,7 +12419,7 @@ module.exports.parse          = deprecated('parse');
 module.exports.compose        = deprecated('compose');
 module.exports.addConstructor = deprecated('addConstructor');
 
-},{"./js-yaml/dumper":25,"./js-yaml/exception":26,"./js-yaml/loader":27,"./js-yaml/schema":29,"./js-yaml/schema/core":30,"./js-yaml/schema/default_full":31,"./js-yaml/schema/default_safe":32,"./js-yaml/schema/failsafe":33,"./js-yaml/schema/json":34,"./js-yaml/type":35}],24:[function(_dereq_,module,exports){
+},{"./js-yaml/dumper":26,"./js-yaml/exception":27,"./js-yaml/loader":28,"./js-yaml/schema":30,"./js-yaml/schema/core":31,"./js-yaml/schema/default_full":32,"./js-yaml/schema/default_safe":33,"./js-yaml/schema/failsafe":34,"./js-yaml/schema/json":35,"./js-yaml/type":36}],25:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -12315,7 +12480,7 @@ module.exports.repeat         = repeat;
 module.exports.isNegativeZero = isNegativeZero;
 module.exports.extend         = extend;
 
-},{}],25:[function(_dereq_,module,exports){
+},{}],26:[function(_dereq_,module,exports){
 'use strict';
 
 /*eslint-disable no-use-before-define*/
@@ -13167,7 +13332,7 @@ function safeDump(input, options) {
 module.exports.dump     = dump;
 module.exports.safeDump = safeDump;
 
-},{"./common":24,"./exception":26,"./schema/default_full":31,"./schema/default_safe":32}],26:[function(_dereq_,module,exports){
+},{"./common":25,"./exception":27,"./schema/default_full":32,"./schema/default_safe":33}],27:[function(_dereq_,module,exports){
 // YAML error class. http://stackoverflow.com/questions/8458984
 //
 'use strict';
@@ -13212,7 +13377,7 @@ YAMLException.prototype.toString = function toString(compact) {
 
 module.exports = YAMLException;
 
-},{}],27:[function(_dereq_,module,exports){
+},{}],28:[function(_dereq_,module,exports){
 'use strict';
 
 /*eslint-disable max-len,no-use-before-define*/
@@ -14858,7 +15023,7 @@ module.exports.load        = load;
 module.exports.safeLoadAll = safeLoadAll;
 module.exports.safeLoad    = safeLoad;
 
-},{"./common":24,"./exception":26,"./mark":28,"./schema/default_full":31,"./schema/default_safe":32}],28:[function(_dereq_,module,exports){
+},{"./common":25,"./exception":27,"./mark":29,"./schema/default_full":32,"./schema/default_safe":33}],29:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -14936,7 +15101,7 @@ Mark.prototype.toString = function toString(compact) {
 
 module.exports = Mark;
 
-},{"./common":24}],29:[function(_dereq_,module,exports){
+},{"./common":25}],30:[function(_dereq_,module,exports){
 'use strict';
 
 /*eslint-disable max-len*/
@@ -15046,7 +15211,7 @@ Schema.create = function createSchema() {
 
 module.exports = Schema;
 
-},{"./common":24,"./exception":26,"./type":35}],30:[function(_dereq_,module,exports){
+},{"./common":25,"./exception":27,"./type":36}],31:[function(_dereq_,module,exports){
 // Standard YAML's Core schema.
 // http://www.yaml.org/spec/1.2/spec.html#id2804923
 //
@@ -15066,7 +15231,7 @@ module.exports = new Schema({
   ]
 });
 
-},{"../schema":29,"./json":34}],31:[function(_dereq_,module,exports){
+},{"../schema":30,"./json":35}],32:[function(_dereq_,module,exports){
 // JS-YAML's default schema for `load` function.
 // It is not described in the YAML specification.
 //
@@ -15093,7 +15258,7 @@ module.exports = Schema.DEFAULT = new Schema({
   ]
 });
 
-},{"../schema":29,"../type/js/function":40,"../type/js/regexp":41,"../type/js/undefined":42,"./default_safe":32}],32:[function(_dereq_,module,exports){
+},{"../schema":30,"../type/js/function":41,"../type/js/regexp":42,"../type/js/undefined":43,"./default_safe":33}],33:[function(_dereq_,module,exports){
 // JS-YAML's default schema for `safeLoad` function.
 // It is not described in the YAML specification.
 //
@@ -15123,7 +15288,7 @@ module.exports = new Schema({
   ]
 });
 
-},{"../schema":29,"../type/binary":36,"../type/merge":44,"../type/omap":46,"../type/pairs":47,"../type/set":49,"../type/timestamp":51,"./core":30}],33:[function(_dereq_,module,exports){
+},{"../schema":30,"../type/binary":37,"../type/merge":45,"../type/omap":47,"../type/pairs":48,"../type/set":50,"../type/timestamp":52,"./core":31}],34:[function(_dereq_,module,exports){
 // Standard YAML's Failsafe schema.
 // http://www.yaml.org/spec/1.2/spec.html#id2802346
 
@@ -15142,7 +15307,7 @@ module.exports = new Schema({
   ]
 });
 
-},{"../schema":29,"../type/map":43,"../type/seq":48,"../type/str":50}],34:[function(_dereq_,module,exports){
+},{"../schema":30,"../type/map":44,"../type/seq":49,"../type/str":51}],35:[function(_dereq_,module,exports){
 // Standard YAML's JSON schema.
 // http://www.yaml.org/spec/1.2/spec.html#id2803231
 //
@@ -15169,7 +15334,7 @@ module.exports = new Schema({
   ]
 });
 
-},{"../schema":29,"../type/bool":37,"../type/float":38,"../type/int":39,"../type/null":45,"./failsafe":33}],35:[function(_dereq_,module,exports){
+},{"../schema":30,"../type/bool":38,"../type/float":39,"../type/int":40,"../type/null":46,"./failsafe":34}],36:[function(_dereq_,module,exports){
 'use strict';
 
 var YAMLException = _dereq_('./exception');
@@ -15232,7 +15397,7 @@ function Type(tag, options) {
 
 module.exports = Type;
 
-},{"./exception":26}],36:[function(_dereq_,module,exports){
+},{"./exception":27}],37:[function(_dereq_,module,exports){
 'use strict';
 
 /*eslint-disable no-bitwise*/
@@ -15372,7 +15537,7 @@ module.exports = new Type('tag:yaml.org,2002:binary', {
   represent: representYamlBinary
 });
 
-},{"../type":35}],37:[function(_dereq_,module,exports){
+},{"../type":36}],38:[function(_dereq_,module,exports){
 'use strict';
 
 var Type = _dereq_('../type');
@@ -15409,7 +15574,7 @@ module.exports = new Type('tag:yaml.org,2002:bool', {
   defaultStyle: 'lowercase'
 });
 
-},{"../type":35}],38:[function(_dereq_,module,exports){
+},{"../type":36}],39:[function(_dereq_,module,exports){
 'use strict';
 
 var common = _dereq_('../common');
@@ -15527,7 +15692,7 @@ module.exports = new Type('tag:yaml.org,2002:float', {
   defaultStyle: 'lowercase'
 });
 
-},{"../common":24,"../type":35}],39:[function(_dereq_,module,exports){
+},{"../common":25,"../type":36}],40:[function(_dereq_,module,exports){
 'use strict';
 
 var common = _dereq_('../common');
@@ -15702,7 +15867,7 @@ module.exports = new Type('tag:yaml.org,2002:int', {
   }
 });
 
-},{"../common":24,"../type":35}],40:[function(_dereq_,module,exports){
+},{"../common":25,"../type":36}],41:[function(_dereq_,module,exports){
 'use strict';
 
 var esprima;
@@ -15797,7 +15962,7 @@ module.exports = new Type('tag:yaml.org,2002:js/function', {
   represent: representJavascriptFunction
 });
 
-},{"../../type":35}],41:[function(_dereq_,module,exports){
+},{"../../type":36}],42:[function(_dereq_,module,exports){
 'use strict';
 
 var Type = _dereq_('../../type');
@@ -15859,7 +16024,7 @@ module.exports = new Type('tag:yaml.org,2002:js/regexp', {
   represent: representJavascriptRegExp
 });
 
-},{"../../type":35}],42:[function(_dereq_,module,exports){
+},{"../../type":36}],43:[function(_dereq_,module,exports){
 'use strict';
 
 var Type = _dereq_('../../type');
@@ -15889,7 +16054,7 @@ module.exports = new Type('tag:yaml.org,2002:js/undefined', {
   represent: representJavascriptUndefined
 });
 
-},{"../../type":35}],43:[function(_dereq_,module,exports){
+},{"../../type":36}],44:[function(_dereq_,module,exports){
 'use strict';
 
 var Type = _dereq_('../type');
@@ -15899,7 +16064,7 @@ module.exports = new Type('tag:yaml.org,2002:map', {
   construct: function (data) { return data !== null ? data : {}; }
 });
 
-},{"../type":35}],44:[function(_dereq_,module,exports){
+},{"../type":36}],45:[function(_dereq_,module,exports){
 'use strict';
 
 var Type = _dereq_('../type');
@@ -15913,7 +16078,7 @@ module.exports = new Type('tag:yaml.org,2002:merge', {
   resolve: resolveYamlMerge
 });
 
-},{"../type":35}],45:[function(_dereq_,module,exports){
+},{"../type":36}],46:[function(_dereq_,module,exports){
 'use strict';
 
 var Type = _dereq_('../type');
@@ -15949,7 +16114,7 @@ module.exports = new Type('tag:yaml.org,2002:null', {
   defaultStyle: 'lowercase'
 });
 
-},{"../type":35}],46:[function(_dereq_,module,exports){
+},{"../type":36}],47:[function(_dereq_,module,exports){
 'use strict';
 
 var Type = _dereq_('../type');
@@ -15995,7 +16160,7 @@ module.exports = new Type('tag:yaml.org,2002:omap', {
   construct: constructYamlOmap
 });
 
-},{"../type":35}],47:[function(_dereq_,module,exports){
+},{"../type":36}],48:[function(_dereq_,module,exports){
 'use strict';
 
 var Type = _dereq_('../type');
@@ -16050,7 +16215,7 @@ module.exports = new Type('tag:yaml.org,2002:pairs', {
   construct: constructYamlPairs
 });
 
-},{"../type":35}],48:[function(_dereq_,module,exports){
+},{"../type":36}],49:[function(_dereq_,module,exports){
 'use strict';
 
 var Type = _dereq_('../type');
@@ -16060,7 +16225,7 @@ module.exports = new Type('tag:yaml.org,2002:seq', {
   construct: function (data) { return data !== null ? data : []; }
 });
 
-},{"../type":35}],49:[function(_dereq_,module,exports){
+},{"../type":36}],50:[function(_dereq_,module,exports){
 'use strict';
 
 var Type = _dereq_('../type');
@@ -16091,7 +16256,7 @@ module.exports = new Type('tag:yaml.org,2002:set', {
   construct: constructYamlSet
 });
 
-},{"../type":35}],50:[function(_dereq_,module,exports){
+},{"../type":36}],51:[function(_dereq_,module,exports){
 'use strict';
 
 var Type = _dereq_('../type');
@@ -16101,7 +16266,7 @@ module.exports = new Type('tag:yaml.org,2002:str', {
   construct: function (data) { return data !== null ? data : ''; }
 });
 
-},{"../type":35}],51:[function(_dereq_,module,exports){
+},{"../type":36}],52:[function(_dereq_,module,exports){
 'use strict';
 
 var Type = _dereq_('../type');
@@ -16191,7 +16356,7 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
   represent: representYamlTimestamp
 });
 
-},{"../type":35}],52:[function(_dereq_,module,exports){
+},{"../type":36}],53:[function(_dereq_,module,exports){
 (function (global){
 /**
  * @license
@@ -33307,7 +33472,7 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
 }.call(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],53:[function(_dereq_,module,exports){
+},{}],54:[function(_dereq_,module,exports){
 // randomColor by David Merfield under the CC0 license
 // https://github.com/davidmerfield/randomColor/
 
@@ -33828,7 +33993,7 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
   return randomColor;
 }));
 
-},{}],54:[function(_dereq_,module,exports){
+},{}],55:[function(_dereq_,module,exports){
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
  *
@@ -34559,7 +34724,7 @@ try {
   Function("r", "regeneratorRuntime = r")(runtime);
 }
 
-},{}],55:[function(_dereq_,module,exports){
+},{}],56:[function(_dereq_,module,exports){
 /*! svg.draggable.js - v2.2.2 - 2019-01-08
 * https://github.com/svgdotjs/svg.draggable.js
 * Copyright (c) 2019 Wout Fierens; Licensed MIT */
@@ -34796,7 +34961,7 @@ try {
 
 }).call(this);
 
-},{}],56:[function(_dereq_,module,exports){
+},{}],57:[function(_dereq_,module,exports){
 /*!
 * svg.js - A lightweight library for manipulating and animating SVG.
 * @version 2.7.1
@@ -40398,7 +40563,7 @@ if (typeof window.CustomEvent !== 'function') {
 return SVG
 
 }));
-},{}],57:[function(_dereq_,module,exports){
+},{}],58:[function(_dereq_,module,exports){
 "use strict";
 
 var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
@@ -41941,7 +42106,7 @@ var Label = /*#__PURE__*/function () {
 var _default = Link;
 exports["default"] = _default;
 
-},{"../util.js":68,"./word-cluster.js":59,"./word-tag.js":60,"@babel/runtime/helpers/classCallCheck":10,"@babel/runtime/helpers/createClass":11,"@babel/runtime/helpers/interopRequireDefault":12,"jquery":21}],58:[function(_dereq_,module,exports){
+},{"../util.js":69,"./word-cluster.js":60,"./word-tag.js":61,"@babel/runtime/helpers/classCallCheck":11,"@babel/runtime/helpers/createClass":12,"@babel/runtime/helpers/interopRequireDefault":13,"jquery":22}],59:[function(_dereq_,module,exports){
 "use strict";
 
 var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
@@ -42644,7 +42809,7 @@ var Row = /*#__PURE__*/function () {
 var _default = Row;
 exports["default"] = _default;
 
-},{"@babel/runtime/helpers/classCallCheck":10,"@babel/runtime/helpers/createClass":11,"@babel/runtime/helpers/interopRequireDefault":12}],59:[function(_dereq_,module,exports){
+},{"@babel/runtime/helpers/classCallCheck":11,"@babel/runtime/helpers/createClass":12,"@babel/runtime/helpers/interopRequireDefault":13}],60:[function(_dereq_,module,exports){
 "use strict";
 
 var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
@@ -43044,7 +43209,7 @@ var WordCluster = /*#__PURE__*/function () {
 var _default = WordCluster;
 exports["default"] = _default;
 
-},{"@babel/runtime/helpers/classCallCheck":10,"@babel/runtime/helpers/createClass":11,"@babel/runtime/helpers/interopRequireDefault":12}],60:[function(_dereq_,module,exports){
+},{"@babel/runtime/helpers/classCallCheck":11,"@babel/runtime/helpers/createClass":12,"@babel/runtime/helpers/interopRequireDefault":13}],61:[function(_dereq_,module,exports){
 "use strict";
 
 var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
@@ -43079,11 +43244,15 @@ var WordTag = /*#__PURE__*/function () {
    */
   function WordTag(val, word, config) {
     var top = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
+    var multiLayer = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
+    var layerIndex = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 0;
     (0, _classCallCheck2["default"])(this, WordTag);
     this.val = val;
     this.word = word;
     this.config = config;
     this.top = top;
+    this.multiLayer = multiLayer !== false;
+    this.layerIndex = layerIndex;
 
     if (!word.svg) {
       throw "Error: Trying to initialise WordTag on Word without SVG" + " element";
@@ -43142,9 +43311,13 @@ var WordTag = /*#__PURE__*/function () {
       var newY;
 
       if (this.top) {
-        newY = -this.word.textHeight - this.svgText.bbox().height - this.config.wordTopTagPadding;
+        newY = -this.word.textHeight - this.svgText.bbox().height - this.config.wordTopTagPadding - this.config.multiTagLayerPadding * this.layerIndex;
       } else {
-        newY = this.config.wordBottomTagPadding;
+        if (!this.multiLayer) {
+          newY = this.config.wordBottomTagPadding;
+        } else {
+          newY = this.config.wordBottomTagPadding + this.config.multiTagLayerPadding * this.layerIndex;
+        }
       }
 
       this.svgText.y(newY);
@@ -43185,7 +43358,7 @@ var WordTag = /*#__PURE__*/function () {
   }, {
     key: "drawTagLine",
     value: function drawTagLine() {
-      if (!this.top) {
+      if (!this.top || this.layerIndex > 0) {
         return;
       }
 
@@ -43313,7 +43486,7 @@ var WordTag = /*#__PURE__*/function () {
 var _default = WordTag;
 exports["default"] = _default;
 
-},{"@babel/runtime/helpers/classCallCheck":10,"@babel/runtime/helpers/createClass":11,"@babel/runtime/helpers/interopRequireDefault":12}],61:[function(_dereq_,module,exports){
+},{"@babel/runtime/helpers/classCallCheck":11,"@babel/runtime/helpers/createClass":12,"@babel/runtime/helpers/interopRequireDefault":13}],62:[function(_dereq_,module,exports){
 "use strict";
 
 var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
@@ -43353,13 +43526,14 @@ var Word = /*#__PURE__*/function () {
     this.eventIds = [];
     this.registeredTags = {};
     this.topTagCategory = "";
-    this.bottomTagCategory = ""; // Back-references that will be set when this Word is used in
+    this.bottomTagCategory = "";
+    this.bottomTags = {};
+    this.topTags = {}; // Back-references that will be set when this Word is used in
     // other structures
     // ---------------------------------------------------------
     // WordTag
 
-    this.topTag = null;
-    this.bottomTag = null; // WordCluster
+    this.topTag = null; // WordCluster
 
     this.clusters = []; // Link
 
@@ -43430,12 +43604,6 @@ var Word = /*#__PURE__*/function () {
   }, {
     key: "setTopTagCategory",
     value: function setTopTagCategory(category) {
-      if (this.topTag) {
-        this.topTag.remove();
-        this.topTag = null;
-      } // Not all categories of tags will be available for all Words
-
-
       if (!this.registeredTags[category]) {
         return;
       }
@@ -43443,11 +43611,62 @@ var Word = /*#__PURE__*/function () {
       this.topTagCategory = category;
 
       if (this.initialised) {
-        this.topTag = new _wordTag["default"](this.registeredTags[category], this, this.config); // Since one of the Word's tags has changed, recalculate/realign its
+        var displayTag = category in this.registeredTags ? this.registeredTags[category] : "-";
+        var topTagKey = "".concat(category, "-").concat(displayTag);
+
+        if (!(topTagKey in this.topTags)) {
+          var currentDisplayedTags = Object.keys(this.topTags);
+          this.topTags[topTagKey] = new _wordTag["default"](displayTag, this, this.config, true, true, currentDisplayedTags.length);
+        } else {
+          this.removeTopTagCategory(category);
+        } // Since one of the Word's tags has changed, recalculate/realign its
         // bounding box
+
 
         this.alignBox();
       }
+    }
+  }, {
+    key: "removeTopTagCategory",
+    value: function removeTopTagCategory(category) {
+      var _this = this;
+
+      var displayTag = category in this.registeredTags ? this.registeredTags[category] : "-";
+      var topTagKey = "".concat(category, "-").concat(displayTag);
+      var topTagKeys = Object.keys(this.topTags);
+
+      if (topTagKeys.length > 1) {
+        topTagKeys.forEach(function (localTopTagKey) {
+          _this.topTags[localTopTagKey].remove();
+        });
+        delete this.topTags[topTagKey];
+
+        this._redrawTopTags();
+
+        this.alignBox();
+      }
+    }
+  }, {
+    key: "_redrawTopTags",
+    value: function _redrawTopTags() {
+      var _this2 = this;
+
+      var currentDisplayedTags = Object.keys(this.topTags);
+      currentDisplayedTags.forEach(function (topTagKey, i) {
+        var currentWordTag = _this2.topTags[topTagKey];
+        _this2.bottomTags[topTagKey] = new _wordTag["default"](currentWordTag.val, _this2, _this2.config, true, true, i);
+      });
+    }
+  }, {
+    key: "_redrawBottomTags",
+    value: function _redrawBottomTags() {
+      var _this3 = this;
+
+      var currentDisplayedTags = Object.keys(this.bottomTags);
+      currentDisplayedTags.forEach(function (bottomTagKey, i) {
+        var currentWordTag = _this3.bottomTags[bottomTagKey];
+        _this3.bottomTags[bottomTagKey] = new _wordTag["default"](currentWordTag.val, _this3, _this3.config, false, true, i);
+      });
     }
     /**
      * Sets the bottom tag category for this Word, redrawing it if it is
@@ -43458,12 +43677,6 @@ var Word = /*#__PURE__*/function () {
   }, {
     key: "setBottomTagCategory",
     value: function setBottomTagCategory(category) {
-      if (this.bottomTag) {
-        this.bottomTag.remove();
-        this.bottomTag = null;
-      } // Not all categories of tags will be available for all Words
-
-
       if (!this.registeredTags[category]) {
         return;
       }
@@ -43471,8 +43684,37 @@ var Word = /*#__PURE__*/function () {
       this.bottomTagCategory = category;
 
       if (this.initialised) {
-        this.bottomTag = new _wordTag["default"](this.registeredTags[category], this, this.config, false); // Since one of the Word's tags has changed, recalculate/realign its
+        var displayTag = category in this.registeredTags ? this.registeredTags[category] : "-";
+        var bottomTagKey = "".concat(category, "-").concat(displayTag);
+
+        if (!(bottomTagKey in this.bottomTags)) {
+          var currentDisplayedTags = Object.keys(this.bottomTags);
+          this.bottomTags[bottomTagKey] = new _wordTag["default"](displayTag, this, this.config, false, true, currentDisplayedTags.length);
+        } else {
+          this.removeBottomTagCategory(category);
+        } // Since one of the Word's tags has changed, recalculate/realign its
         // bounding box
+
+
+        this.alignBox();
+      }
+    }
+  }, {
+    key: "removeBottomTagCategory",
+    value: function removeBottomTagCategory(category) {
+      var _this4 = this;
+
+      var displayTag = category in this.registeredTags ? this.registeredTags[category] : "-";
+      var bottomTagKey = "".concat(category, "-").concat(displayTag);
+      var bottomTagKeys = Object.keys(this.bottomTags);
+
+      if (bottomTagKeys.length > 1) {
+        bottomTagKeys.forEach(function (localBottomTagKey) {
+          _this4.bottomTags[localBottomTagKey].remove();
+        });
+        delete this.bottomTags[bottomTagKey];
+
+        this._redrawBottomTags();
 
         this.alignBox();
       }
@@ -43488,7 +43730,7 @@ var Word = /*#__PURE__*/function () {
   }, {
     key: "init",
     value: function init(main) {
-      var _this = this;
+      var _this5 = this;
 
       this.main = main;
       this.config = main.config;
@@ -43512,16 +43754,21 @@ var Word = /*#__PURE__*/function () {
       // Draw in this Word's tags
 
       if (this.topTagCategory) {
-        this.topTag = new _wordTag["default"](this.registeredTags[this.topTagCategory], this, this.config);
+        var displayTag = this.registeredTags[this.topTagCategory];
+
+        if (displayTag) {
+          this.topTags[displayTag] = new _wordTag["default"](displayTag, this, this.config, true, true, 0);
+        }
       }
 
       if (this.bottomTagCategory) {
-        this.bottomTag = new _wordTag["default"](this.registeredTags[this.bottomTagCategory], this, this.config, false);
+        var _displayTag = this.registeredTags[this.bottomTagCategory];
+        this.bottomTags[_displayTag] = new _wordTag["default"](_displayTag, this, this.config, false, true, 0);
       } // Draw cluster info
 
 
       this.clusters.forEach(function (cluster) {
-        cluster.init(_this, main);
+        cluster.init(_this5, main);
       }); // Ensure that all the SVG elements for this Word and any WordTags are
       // well-positioned within the Word's bounding box, and set the cached
       // values this._textBbox and this._bbox
@@ -43540,7 +43787,7 @@ var Word = /*#__PURE__*/function () {
         var dx = e.detail.p.x - x;
         x = e.detail.p.x;
         mainSvg.fire("word-move", {
-          object: _this,
+          object: _this5,
           x: dx
         });
 
@@ -43549,14 +43796,14 @@ var Word = /*#__PURE__*/function () {
         }
       }).on("dragend", function () {
         mainSvg.fire("word-move-end", {
-          object: _this,
+          object: _this5,
           clicked: mousemove === false
         });
       }); // attach right click listener
 
       this.svgText.dblclick(function (e) {
         return mainSvg.fire("build-tree", {
-          object: _this,
+          object: _this5,
           event: e
         });
       });
@@ -43564,7 +43811,7 @@ var Word = /*#__PURE__*/function () {
       this.svgText.node.oncontextmenu = function (e) {
         e.preventDefault();
         mainSvg.fire("word-right-click", {
-          object: _this,
+          object: _this5,
           event: e
         });
       };
@@ -43578,10 +43825,10 @@ var Word = /*#__PURE__*/function () {
   }, {
     key: "redrawLinks",
     value: function redrawLinks() {
-      var _this2 = this;
+      var _this6 = this;
 
       this.links.forEach(function (l) {
-        return l.draw(_this2);
+        return l.draw(_this6);
       });
       this.redrawClusters();
     }
@@ -43592,10 +43839,10 @@ var Word = /*#__PURE__*/function () {
   }, {
     key: "redrawClusters",
     value: function redrawClusters() {
-      var _this3 = this;
+      var _this7 = this;
 
       this.clusters.forEach(function (cluster) {
-        if (cluster.endpoints.indexOf(_this3) > -1) {
+        if (cluster.endpoints.indexOf(_this7) > -1) {
           cluster.draw();
         }
       });
@@ -43635,6 +43882,8 @@ var Word = /*#__PURE__*/function () {
   }, {
     key: "alignBox",
     value: function alignBox() {
+      var _this8 = this;
+
       // We begin by resetting the position of the Text elements of this Word
       // and any WordTags, so that consecutive calls to `.alignBox()` don't
       // push them further and further away from their starting point
@@ -43650,8 +43899,12 @@ var Word = /*#__PURE__*/function () {
         this.topTag.centre();
       }
 
-      if (this.bottomTag) {
-        this.bottomTag.centre();
+      var currentDisplayedBottomTags = Object.keys(this.bottomTags);
+
+      if (currentDisplayedBottomTags.length > 0) {
+        currentDisplayedBottomTags.forEach(function (displayedTag) {
+          _this8.bottomTags[displayedTag].centre();
+        });
       } // Generally, we will only need to move things around if the WordTags
       // are wider than the Word, which gives the Word's bounding box a
       // negative x-value.
@@ -43880,7 +44133,7 @@ var Word = /*#__PURE__*/function () {
 var _default = Word;
 exports["default"] = _default;
 
-},{"./word-tag.js":60,"@babel/runtime/helpers/classCallCheck":10,"@babel/runtime/helpers/createClass":11,"@babel/runtime/helpers/interopRequireDefault":12,"@babel/runtime/helpers/slicedToArray":16}],62:[function(_dereq_,module,exports){
+},{"./word-tag.js":61,"@babel/runtime/helpers/classCallCheck":11,"@babel/runtime/helpers/createClass":12,"@babel/runtime/helpers/interopRequireDefault":13,"@babel/runtime/helpers/slicedToArray":17}],63:[function(_dereq_,module,exports){
 "use strict";
 
 var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
@@ -44025,7 +44278,8 @@ function Config() {
 
   this.wordTopTagPadding = 10; // Vertical padding between Words and WordTags drawn below them
 
-  this.wordBottomTagPadding = 0; // For WordTags drawn above Words, the height of the connecting
+  this.wordBottomTagPadding = 0;
+  this.multiTagLayerPadding = 15; // For WordTags drawn above Words, the height of the connecting
   // line/brace between the Word and the WordTag
 
   this.wordTagLineLength = 9; // Words that are wider than this width will have curly braces drawn
@@ -44054,7 +44308,7 @@ function Config() {
 var _default = Config;
 exports["default"] = _default;
 
-},{"@babel/runtime/helpers/classCallCheck":10,"@babel/runtime/helpers/interopRequireDefault":12}],63:[function(_dereq_,module,exports){
+},{"@babel/runtime/helpers/classCallCheck":11,"@babel/runtime/helpers/interopRequireDefault":13}],64:[function(_dereq_,module,exports){
 "use strict";
 
 var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
@@ -44549,7 +44803,7 @@ var Main = (0, _autobindDecorator["default"])(_class = /*#__PURE__*/function () 
       exportedSVG = exportedSVG.slice(0, i) + "<style>" + svgRules.join("\n") + "</style>" + exportedSVG.slice(i); // Create a virtual download link and simulate a click on it (using the
       // native `.click()` method, since jQuery cannot `.trigger()` it
 
-      (0, _jquery["default"])("<a \n      href=\"data:image/svg+xml;charset=utf-8,".concat(encodeURIComponent(exportedSVG), "\"\n      download=\"tag.svg\"></a>")).appendTo((0, _jquery["default"])("body"))[0].click();
+      (0, _jquery["default"])("<a\n      href=\"data:image/svg+xml;charset=utf-8,".concat(encodeURIComponent(exportedSVG), "\"\n      download=\"tag.svg\"></a>")).appendTo((0, _jquery["default"])("body"))[0].click();
     }
     /**
      * Changes the value of the given option setting
@@ -44678,6 +44932,20 @@ var Main = (0, _autobindDecorator["default"])(_class = /*#__PURE__*/function () 
 
       this.rowManager.resizeAll();
     }
+  }, {
+    key: "removeTopTagCategory",
+    value: function removeTopTagCategory(category) {
+      this.words.forEach(function (word) {
+        word.removeTopTagCategory(category);
+        word.passingLinks.forEach(function (link) {
+          return link.draw();
+        });
+      }); // (Re-)colour the labels
+
+      this.taxonomyManager.colour(this.words); // Always resize when the set of visible Links may have changed
+
+      this.rowManager.resizeAll();
+    }
     /**
      * Shows the specified category of bottom Word tags
      * @param category
@@ -44694,6 +44962,17 @@ var Main = (0, _autobindDecorator["default"])(_class = /*#__PURE__*/function () 
         });
       }); // Always resize when the set of visible Links may have changed
 
+      this.rowManager.resizeAll();
+    }
+  }, {
+    key: "removeBottomTagCategory",
+    value: function removeBottomTagCategory(category) {
+      this.words.forEach(function (word) {
+        word.removeBottomTagCategory(category);
+        word.passingLinks.forEach(function (link) {
+          return link.draw();
+        });
+      });
       this.rowManager.resizeAll();
     }
     /**
@@ -44904,7 +45183,7 @@ var Main = (0, _autobindDecorator["default"])(_class = /*#__PURE__*/function () 
 var _default = Main;
 exports["default"] = _default;
 
-},{"./components/link":57,"./components/word":61,"./components/word-cluster":59,"./config":62,"./managers/labelmanager":64,"./managers/rowmanager":65,"./managers/taxonomy":66,"./util":68,"@babel/runtime/helpers/asyncToGenerator":9,"@babel/runtime/helpers/classCallCheck":10,"@babel/runtime/helpers/createClass":11,"@babel/runtime/helpers/interopRequireDefault":12,"@babel/runtime/helpers/interopRequireWildcard":13,"@babel/runtime/regenerator":19,"autobind-decorator":20,"jquery":21,"lodash":52,"svg.js":56}],64:[function(_dereq_,module,exports){
+},{"./components/link":58,"./components/word":62,"./components/word-cluster":60,"./config":63,"./managers/labelmanager":65,"./managers/rowmanager":66,"./managers/taxonomy":67,"./util":69,"@babel/runtime/helpers/asyncToGenerator":10,"@babel/runtime/helpers/classCallCheck":11,"@babel/runtime/helpers/createClass":12,"@babel/runtime/helpers/interopRequireDefault":13,"@babel/runtime/helpers/interopRequireWildcard":14,"@babel/runtime/regenerator":20,"autobind-decorator":21,"jquery":22,"lodash":53,"svg.js":57}],65:[function(_dereq_,module,exports){
 "use strict";
 
 var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
@@ -45031,7 +45310,7 @@ module.exports = function () {
   return LabelManager;
 }();
 
-},{"../components/link.js":57,"@babel/runtime/helpers/classCallCheck":10,"@babel/runtime/helpers/interopRequireDefault":12}],65:[function(_dereq_,module,exports){
+},{"../components/link.js":58,"@babel/runtime/helpers/classCallCheck":11,"@babel/runtime/helpers/interopRequireDefault":13}],66:[function(_dereq_,module,exports){
 "use strict";
 
 var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
@@ -45479,7 +45758,7 @@ var RowManager = /*#__PURE__*/function () {
 var _default = RowManager;
 exports["default"] = _default;
 
-},{"../components/row.js":58,"@babel/runtime/helpers/classCallCheck":10,"@babel/runtime/helpers/createClass":11,"@babel/runtime/helpers/interopRequireDefault":12}],66:[function(_dereq_,module,exports){
+},{"../components/row.js":59,"@babel/runtime/helpers/classCallCheck":11,"@babel/runtime/helpers/createClass":12,"@babel/runtime/helpers/interopRequireDefault":13}],67:[function(_dereq_,module,exports){
 "use strict";
 
 var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
@@ -45693,7 +45972,7 @@ var TaxonomyManager = /*#__PURE__*/function () {
 var _default = TaxonomyManager;
 exports["default"] = _default;
 
-},{"../components/word.js":61,"@babel/runtime/helpers/classCallCheck":10,"@babel/runtime/helpers/createClass":11,"@babel/runtime/helpers/interopRequireDefault":12,"js-yaml":22,"lodash":52,"randomcolor":53}],67:[function(_dereq_,module,exports){
+},{"../components/word.js":62,"@babel/runtime/helpers/classCallCheck":11,"@babel/runtime/helpers/createClass":12,"@babel/runtime/helpers/interopRequireDefault":13,"js-yaml":23,"lodash":53,"randomcolor":54}],68:[function(_dereq_,module,exports){
 "use strict";
 
 var _interopRequireDefault = _dereq_("@babel/runtime/helpers/interopRequireDefault");
@@ -45711,6 +45990,8 @@ var _odin = _interopRequireDefault(_dereq_("../../Parsers/odin"));
 
 var _brat = _interopRequireDefault(_dereq_("../../Parsers/brat"));
 
+var _odinson = _interopRequireDefault(_dereq_("../../Parsers/odinson"));
+
 /**
  * Instantiation and static functions
  */
@@ -45718,7 +45999,8 @@ var _brat = _interopRequireDefault(_dereq_("../../Parsers/brat"));
 // main library, and will be inherited by individual TAG instances.
 var parsers = {
   odin: new _odin["default"](),
-  brat: new _brat["default"]()
+  brat: new _brat["default"](),
+  odinson: new _odinson["default"]()
 };
 /**
  * Initialises a TAG visualisation on the given element.
@@ -45778,7 +46060,7 @@ module.exports = {
   registerParser: registerParser
 };
 
-},{"../../Parsers/brat":1,"../../Parsers/odin":6,"./main":63,"@babel/runtime/helpers/interopRequireDefault":12,"lodash":52}],68:[function(_dereq_,module,exports){
+},{"../../Parsers/brat":1,"../../Parsers/odin":6,"../../Parsers/odinson":7,"./main":64,"@babel/runtime/helpers/interopRequireDefault":13,"lodash":53}],69:[function(_dereq_,module,exports){
 "use strict";
 
 var _interopRequireWildcard = _dereq_("@babel/runtime/helpers/interopRequireWildcard");
@@ -45935,5 +46217,5 @@ var _default = {
 };
 exports["default"] = _default;
 
-},{"@babel/runtime/helpers/interopRequireWildcard":13,"lodash":52,"svg.draggable.js":55,"svg.js":56}]},{},[67])(67)
+},{"@babel/runtime/helpers/interopRequireWildcard":14,"lodash":53,"svg.draggable.js":56,"svg.js":57}]},{},[68])(68)
 });

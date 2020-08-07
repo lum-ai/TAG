@@ -65,24 +65,6 @@ $(async () => {
 
   await fontLoadPromise;
 
-  // ------------
-  // Load Parsers
-  // ------------
-  // Annotation formats need to have a corresponding Parser registered
-  // before they can be used.
-
-  /**
-   * Parser classes should, at the very least, implement a `.parse()` method
-   * that accepts an array of input data objects and returns the parsed
-   * Words/Links/Clusters:
-   *
-   *   {
-   *     tokens: [...],
-   *     links: [...],
-   *   };
-
-   */
-
   // -------------
   // Basic example
   // -------------
