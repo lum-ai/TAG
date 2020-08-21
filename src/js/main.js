@@ -89,9 +89,11 @@ class Main {
     }
 
     this.clear();
+
     this.parsedData = this.parsers[format].parse(dataObjects);
-    console.log("Initial data:");
-    console.log(this.parsedData);
+    this.parsedDataFormat = format;
+
+    this.svgListeners = {};
 
     this.init();
     this.draw();
@@ -669,8 +671,9 @@ class Main {
     });
 
     this.svg.on("label-updated", (e) => {
-      console.log("Data after edit:");
-      console.log(this.parsedData);
+      this.svgListeners["label-updated"].forEach((listener) => {
+        listener.call(this, this.parsedData);
+      });
       // // TODO: so so incomplete
       // let color = tm.getColor(e.detail.label, e.detail.object);
       // e.detail.object.node.style.fill = color;
@@ -758,6 +761,15 @@ class Main {
 
   yLine(y) {
     this.svg.line(0, y, 1000, y).stroke({ width: 1 });
+  }
+
+  addSvgListener(svgEvent, listener) {
+    if (svgEvent in this.svgListeners) {
+      this.svgListeners[svgEvent].push(listener);
+    }
+    else {
+      this.svgListeners[svgEvent] = [listener];
+    }
   }
 }
 

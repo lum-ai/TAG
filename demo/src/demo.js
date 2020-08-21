@@ -13,6 +13,7 @@ const TAG = require("../../src/js/tag.js");
 
 const $ = require("jquery");
 const _ = require("lodash");
+const JsonFormatter = require("json-formatter-js");
 
 // Bootstrap includes for the full UI demo
 require("popper.js");
@@ -43,6 +44,18 @@ window.jQuery = $;
 
 // For debugging
 window._ = require("lodash");
+
+function showParsedData(parsedData) {
+  const tagDataContainer = $("#tagData");
+  tagDataContainer.html("Loading...");
+
+  const dataFormatter = new JsonFormatter(parsedData, 1, {
+    animateOpen: false,
+    animateClose: false
+  });
+
+  tagDataContainer.html(dataFormatter.render());
+}
 
 // Main function
 $(async () => {
@@ -93,6 +106,7 @@ $(async () => {
   // Advanced/UI example
   // -------------------
   const $uiContainer = $("#uiContainer");
+
   const uiTag = TAG.tag({
     container: $uiContainer
   });
@@ -102,6 +116,9 @@ $(async () => {
   // Data can be loaded after initialisation using the `.loadData()` function,
   // or from a remote URL via the asynchronous `.loadUrlAsync()` function.
   await uiTag.loadUrlAsync("data/sentence-1-odin.json", "odin");
+  uiTag.addSvgListener("label-updated", showParsedData);
+
+  showParsedData(uiTag.parsedData);
 
   // --------------------------------------------------------------------------
 

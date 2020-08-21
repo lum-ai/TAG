@@ -45,7 +45,7 @@
 
 // Missing borders above some accordion headers
 #tag-taxonomy-tree div.collapse + a.card-header {
-  border-top: 1px solid rgba(0, 0, 0, .125);
+  border-top: 1px solid rgba(0, 0, 0, 0.125);
 }
 
 // Icons for accordion headers
@@ -60,7 +60,7 @@
 // Styles for the taxonomy colour picker plugin
 @import "../../node_modules/bootstrap-colorpicker/dist/css/bootstrap-colorpicker";
 
-.tag-cp input[type=text] {
+.tag-cp input[type="text"] {
   width: 100px;
 }
 
@@ -79,7 +79,8 @@
 // fonts import here as well so that they work properly for downloaded SVGs.
 @import url("https://fonts.googleapis.com/css?family=Nunito:400,600,700");
 
-svg, svg text {
+svg,
+svg text {
   font-family: Nunito, futura, helvetica, arial, sans-serif;
   font-weight: 600;
 }
@@ -87,4 +88,8 @@ svg, svg text {
 svg text {
   cursor: default;
   user-select: none;
+}
+
+#tagData {
+  padding-top: 20px;
 }

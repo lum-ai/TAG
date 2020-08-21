@@ -30,6 +30,7 @@
     "@babel/plugin-transform-runtime": "^7.1.0",
     "@babel/preset-env": "^7.1.5",
     "@babel/runtime": "^7.1.5",
+    "@svgdotjs/svg.js": "^3.0.16",
     "autobind-decorator": "^2.2.1",
     "autoprefixer": "^9.3.0",
     "babel-core": "^7.0.0-bridge.0",
@@ -55,6 +56,7 @@
     "jquery": ">=3.4.0",
     "js-yaml": ">=3.13.1",
     "jsdoc": "^3.5.5",
+    "json-formatter-js": "^2.3.4",
     "lodash": "^4.17.11",
     "mkdirp": "^0.5.1",
     "morgan": "^1.9.1",
@@ -66,7 +68,6 @@
     "rimraf": "^2.6.3",
     "sass": "^1.14.3",
     "svg.draggable.js": "^2.2.1",
-    "svg.js": "^3.0.16",
     "tasksfile": "^5.1.0",
     "tinyify": "^2.4.3",
     "watchify": "^3.11.1"
@@ -76,5 +77,6 @@
     "graphs",
     "nlp",
     "visualization"
-  ]
+  ],
+  "dependencies": {}
 }
