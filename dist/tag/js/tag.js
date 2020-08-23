@@ -43244,11 +43244,15 @@ var WordTag = /*#__PURE__*/function () {
    */
   function WordTag(val, word, config) {
     var top = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
+    var multiLayer = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
+    var layerIndex = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 0;
     (0, _classCallCheck2["default"])(this, WordTag);
     this.val = val;
     this.word = word;
     this.config = config;
     this.top = top;
+    this.multiLayer = multiLayer !== false;
+    this.layerIndex = layerIndex;
 
     if (!word.svg) {
       throw "Error: Trying to initialise WordTag on Word without SVG" + " element";
@@ -43307,9 +43311,13 @@ var WordTag = /*#__PURE__*/function () {
       var newY;
 
       if (this.top) {
-        newY = -this.word.textHeight - this.svgText.bbox().height - this.config.wordTopTagPadding;
+        newY = -this.word.textHeight - this.svgText.bbox().height - this.config.wordTopTagPadding - this.config.multiTagLayerPadding * this.layerIndex;
       } else {
-        newY = this.config.wordBottomTagPadding;
+        if (!this.multiLayer) {
+          newY = this.config.wordBottomTagPadding;
+        } else {
+          newY = this.config.wordBottomTagPadding + this.config.multiTagLayerPadding * this.layerIndex;
+        }
       }
 
       this.svgText.y(newY);
@@ -43350,7 +43358,7 @@ var WordTag = /*#__PURE__*/function () {
   }, {
     key: "drawTagLine",
     value: function drawTagLine() {
-      if (!this.top) {
+      if (!this.top || this.layerIndex > 0) {
         return;
       }
 
@@ -43518,13 +43526,14 @@ var Word = /*#__PURE__*/function () {
     this.eventIds = [];
     this.registeredTags = {};
     this.topTagCategory = "";
-    this.bottomTagCategory = ""; // Back-references that will be set when this Word is used in
+    this.bottomTagCategory = "";
+    this.bottomTags = {};
+    this.topTags = {}; // Back-references that will be set when this Word is used in
     // other structures
     // ---------------------------------------------------------
     // WordTag
 
-    this.topTag = null;
-    this.bottomTag = null; // WordCluster
+    this.topTag = null; // WordCluster
 
     this.clusters = []; // Link
 
@@ -43595,12 +43604,6 @@ var Word = /*#__PURE__*/function () {
   }, {
     key: "setTopTagCategory",
     value: function setTopTagCategory(category) {
-      if (this.topTag) {
-        this.topTag.remove();
-        this.topTag = null;
-      } // Not all categories of tags will be available for all Words
-
-
       if (!this.registeredTags[category]) {
         return;
       }
@@ -43608,11 +43611,62 @@ var Word = /*#__PURE__*/function () {
       this.topTagCategory = category;
 
       if (this.initialised) {
-        this.topTag = new _wordTag["default"](this.registeredTags[category], this, this.config); // Since one of the Word's tags has changed, recalculate/realign its
+        var displayTag = category in this.registeredTags ? this.registeredTags[category] : "-";
+        var topTagKey = "".concat(category, "-").concat(displayTag);
+
+        if (!(topTagKey in this.topTags)) {
+          var currentDisplayedTags = Object.keys(this.topTags);
+          this.topTags[topTagKey] = new _wordTag["default"](displayTag, this, this.config, true, true, currentDisplayedTags.length);
+        } else {
+          this.removeTopTagCategory(category);
+        } // Since one of the Word's tags has changed, recalculate/realign its
         // bounding box
+
 
         this.alignBox();
       }
+    }
+  }, {
+    key: "removeTopTagCategory",
+    value: function removeTopTagCategory(category) {
+      var _this = this;
+
+      var displayTag = category in this.registeredTags ? this.registeredTags[category] : "-";
+      var topTagKey = "".concat(category, "-").concat(displayTag);
+      var topTagKeys = Object.keys(this.topTags);
+
+      if (topTagKeys.length > 1) {
+        topTagKeys.forEach(function (localTopTagKey) {
+          _this.topTags[localTopTagKey].remove();
+        });
+        delete this.topTags[topTagKey];
+
+        this._redrawTopTags();
+
+        this.alignBox();
+      }
+    }
+  }, {
+    key: "_redrawTopTags",
+    value: function _redrawTopTags() {
+      var _this2 = this;
+
+      var currentDisplayedTags = Object.keys(this.topTags);
+      currentDisplayedTags.forEach(function (topTagKey, i) {
+        var currentWordTag = _this2.topTags[topTagKey];
+        _this2.bottomTags[topTagKey] = new _wordTag["default"](currentWordTag.val, _this2, _this2.config, true, true, i);
+      });
+    }
+  }, {
+    key: "_redrawBottomTags",
+    value: function _redrawBottomTags() {
+      var _this3 = this;
+
+      var currentDisplayedTags = Object.keys(this.bottomTags);
+      currentDisplayedTags.forEach(function (bottomTagKey, i) {
+        var currentWordTag = _this3.bottomTags[bottomTagKey];
+        _this3.bottomTags[bottomTagKey] = new _wordTag["default"](currentWordTag.val, _this3, _this3.config, false, true, i);
+      });
     }
     /**
      * Sets the bottom tag category for this Word, redrawing it if it is
@@ -43623,12 +43677,6 @@ var Word = /*#__PURE__*/function () {
   }, {
     key: "setBottomTagCategory",
     value: function setBottomTagCategory(category) {
-      if (this.bottomTag) {
-        this.bottomTag.remove();
-        this.bottomTag = null;
-      } // Not all categories of tags will be available for all Words
-
-
       if (!this.registeredTags[category]) {
         return;
       }
@@ -43636,8 +43684,37 @@ var Word = /*#__PURE__*/function () {
       this.bottomTagCategory = category;
 
       if (this.initialised) {
-        this.bottomTag = new _wordTag["default"](this.registeredTags[category], this, this.config, false); // Since one of the Word's tags has changed, recalculate/realign its
+        var displayTag = category in this.registeredTags ? this.registeredTags[category] : "-";
+        var bottomTagKey = "".concat(category, "-").concat(displayTag);
+
+        if (!(bottomTagKey in this.bottomTags)) {
+          var currentDisplayedTags = Object.keys(this.bottomTags);
+          this.bottomTags[bottomTagKey] = new _wordTag["default"](displayTag, this, this.config, false, true, currentDisplayedTags.length);
+        } else {
+          this.removeBottomTagCategory(category);
+        } // Since one of the Word's tags has changed, recalculate/realign its
         // bounding box
+
+
+        this.alignBox();
+      }
+    }
+  }, {
+    key: "removeBottomTagCategory",
+    value: function removeBottomTagCategory(category) {
+      var _this4 = this;
+
+      var displayTag = category in this.registeredTags ? this.registeredTags[category] : "-";
+      var bottomTagKey = "".concat(category, "-").concat(displayTag);
+      var bottomTagKeys = Object.keys(this.bottomTags);
+
+      if (bottomTagKeys.length > 1) {
+        bottomTagKeys.forEach(function (localBottomTagKey) {
+          _this4.bottomTags[localBottomTagKey].remove();
+        });
+        delete this.bottomTags[bottomTagKey];
+
+        this._redrawBottomTags();
 
         this.alignBox();
       }
@@ -43653,7 +43730,7 @@ var Word = /*#__PURE__*/function () {
   }, {
     key: "init",
     value: function init(main) {
-      var _this = this;
+      var _this5 = this;
 
       this.main = main;
       this.config = main.config;
@@ -43677,16 +43754,21 @@ var Word = /*#__PURE__*/function () {
       // Draw in this Word's tags
 
       if (this.topTagCategory) {
-        this.topTag = new _wordTag["default"](this.registeredTags[this.topTagCategory], this, this.config);
+        var displayTag = this.registeredTags[this.topTagCategory];
+
+        if (displayTag) {
+          this.topTags[displayTag] = new _wordTag["default"](displayTag, this, this.config, true, true, 0);
+        }
       }
 
       if (this.bottomTagCategory) {
-        this.bottomTag = new _wordTag["default"](this.registeredTags[this.bottomTagCategory], this, this.config, false);
+        var _displayTag = this.registeredTags[this.bottomTagCategory];
+        this.bottomTags[_displayTag] = new _wordTag["default"](_displayTag, this, this.config, false, true, 0);
       } // Draw cluster info
 
 
       this.clusters.forEach(function (cluster) {
-        cluster.init(_this, main);
+        cluster.init(_this5, main);
       }); // Ensure that all the SVG elements for this Word and any WordTags are
       // well-positioned within the Word's bounding box, and set the cached
       // values this._textBbox and this._bbox
@@ -43705,7 +43787,7 @@ var Word = /*#__PURE__*/function () {
         var dx = e.detail.p.x - x;
         x = e.detail.p.x;
         mainSvg.fire("word-move", {
-          object: _this,
+          object: _this5,
           x: dx
         });
 
@@ -43714,14 +43796,14 @@ var Word = /*#__PURE__*/function () {
         }
       }).on("dragend", function () {
         mainSvg.fire("word-move-end", {
-          object: _this,
+          object: _this5,
           clicked: mousemove === false
         });
       }); // attach right click listener
 
       this.svgText.dblclick(function (e) {
         return mainSvg.fire("build-tree", {
-          object: _this,
+          object: _this5,
           event: e
         });
       });
@@ -43729,7 +43811,7 @@ var Word = /*#__PURE__*/function () {
       this.svgText.node.oncontextmenu = function (e) {
         e.preventDefault();
         mainSvg.fire("word-right-click", {
-          object: _this,
+          object: _this5,
           event: e
         });
       };
@@ -43743,10 +43825,10 @@ var Word = /*#__PURE__*/function () {
   }, {
     key: "redrawLinks",
     value: function redrawLinks() {
-      var _this2 = this;
+      var _this6 = this;
 
       this.links.forEach(function (l) {
-        return l.draw(_this2);
+        return l.draw(_this6);
       });
       this.redrawClusters();
     }
@@ -43757,10 +43839,10 @@ var Word = /*#__PURE__*/function () {
   }, {
     key: "redrawClusters",
     value: function redrawClusters() {
-      var _this3 = this;
+      var _this7 = this;
 
       this.clusters.forEach(function (cluster) {
-        if (cluster.endpoints.indexOf(_this3) > -1) {
+        if (cluster.endpoints.indexOf(_this7) > -1) {
           cluster.draw();
         }
       });
@@ -43800,6 +43882,8 @@ var Word = /*#__PURE__*/function () {
   }, {
     key: "alignBox",
     value: function alignBox() {
+      var _this8 = this;
+
       // We begin by resetting the position of the Text elements of this Word
       // and any WordTags, so that consecutive calls to `.alignBox()` don't
       // push them further and further away from their starting point
@@ -43815,8 +43899,12 @@ var Word = /*#__PURE__*/function () {
         this.topTag.centre();
       }
 
-      if (this.bottomTag) {
-        this.bottomTag.centre();
+      var currentDisplayedBottomTags = Object.keys(this.bottomTags);
+
+      if (currentDisplayedBottomTags.length > 0) {
+        currentDisplayedBottomTags.forEach(function (displayedTag) {
+          _this8.bottomTags[displayedTag].centre();
+        });
       } // Generally, we will only need to move things around if the WordTags
       // are wider than the Word, which gives the Word's bounding box a
       // negative x-value.
@@ -44190,7 +44278,8 @@ function Config() {
 
   this.wordTopTagPadding = 10; // Vertical padding between Words and WordTags drawn below them
 
-  this.wordBottomTagPadding = 0; // For WordTags drawn above Words, the height of the connecting
+  this.wordBottomTagPadding = 0;
+  this.multiTagLayerPadding = 15; // For WordTags drawn above Words, the height of the connecting
   // line/brace between the Word and the WordTag
 
   this.wordTagLineLength = 9; // Words that are wider than this width will have curly braces drawn
@@ -44714,7 +44803,7 @@ var Main = (0, _autobindDecorator["default"])(_class = /*#__PURE__*/function () 
       exportedSVG = exportedSVG.slice(0, i) + "<style>" + svgRules.join("\n") + "</style>" + exportedSVG.slice(i); // Create a virtual download link and simulate a click on it (using the
       // native `.click()` method, since jQuery cannot `.trigger()` it
 
-      (0, _jquery["default"])("<a \n      href=\"data:image/svg+xml;charset=utf-8,".concat(encodeURIComponent(exportedSVG), "\"\n      download=\"tag.svg\"></a>")).appendTo((0, _jquery["default"])("body"))[0].click();
+      (0, _jquery["default"])("<a\n      href=\"data:image/svg+xml;charset=utf-8,".concat(encodeURIComponent(exportedSVG), "\"\n      download=\"tag.svg\"></a>")).appendTo((0, _jquery["default"])("body"))[0].click();
     }
     /**
      * Changes the value of the given option setting
@@ -44843,6 +44932,20 @@ var Main = (0, _autobindDecorator["default"])(_class = /*#__PURE__*/function () 
 
       this.rowManager.resizeAll();
     }
+  }, {
+    key: "removeTopTagCategory",
+    value: function removeTopTagCategory(category) {
+      this.words.forEach(function (word) {
+        word.removeTopTagCategory(category);
+        word.passingLinks.forEach(function (link) {
+          return link.draw();
+        });
+      }); // (Re-)colour the labels
+
+      this.taxonomyManager.colour(this.words); // Always resize when the set of visible Links may have changed
+
+      this.rowManager.resizeAll();
+    }
     /**
      * Shows the specified category of bottom Word tags
      * @param category
@@ -44859,6 +44962,17 @@ var Main = (0, _autobindDecorator["default"])(_class = /*#__PURE__*/function () 
         });
       }); // Always resize when the set of visible Links may have changed
 
+      this.rowManager.resizeAll();
+    }
+  }, {
+    key: "removeBottomTagCategory",
+    value: function removeBottomTagCategory(category) {
+      this.words.forEach(function (word) {
+        word.removeBottomTagCategory(category);
+        word.passingLinks.forEach(function (link) {
+          return link.draw();
+        });
+      });
       this.rowManager.resizeAll();
     }
     /**

@@ -34,12 +34,14 @@ class Word {
     this.topTagCategory = "";
     this.bottomTagCategory = "";
 
+    this.bottomTags = {};
+    this.topTags = {};
+
     // Back-references that will be set when this Word is used in
     // other structures
     // ---------------------------------------------------------
     // WordTag
     this.topTag = null;
-    this.bottomTag = null;
 
     // WordCluster
     this.clusters = [];
@@ -109,28 +111,84 @@ class Word {
    * @param {String} category
    */
   setTopTagCategory(category) {
-    if (this.topTag) {
-      this.topTag.remove();
-      this.topTag = null;
-    }
-
-    // Not all categories of tags will be available for all Words
     if (!this.registeredTags[category]) {
       return;
     }
 
     this.topTagCategory = category;
-    if (this.initialised) {
-      this.topTag = new WordTag(
-        this.registeredTags[category],
-        this,
-        this.config
-      );
 
-      // Since one of the Word's tags has changed, recalculate/realign its
-      // bounding box
+    if (this.initialised) {
+      const displayTag = category in this.registeredTags ? this.registeredTags[category] : "-";
+      const topTagKey = `${category}-${displayTag}`;
+
+      if (!(topTagKey in this.topTags)) {
+        const currentDisplayedTags = Object.keys(this.topTags);
+
+        this.topTags[topTagKey] = new WordTag(
+          displayTag,
+          this,
+          this.config,
+          true,
+          true,
+          currentDisplayedTags.length
+        );
+      }
+      else {
+        this.removeTopTagCategory(category);
+      }
+
       this.alignBox();
     }
+  }
+
+  removeTopTagCategory(category) {
+    const displayTag = category in this.registeredTags ? this.registeredTags[category] : "-";
+    const topTagKey = `${category}-${displayTag}`;
+    const topTagKeys = Object.keys(this.topTags);
+
+    if (topTagKeys.length > 1) {
+      const tag = this.topTags[topTagKey];
+
+      if (tag) {
+        tag.remove();
+      }
+
+      delete this.topTags[topTagKey];
+
+      this._redrawTopTags();
+
+      this.alignBox();
+    }
+  }
+
+  _redrawTopTags() {
+    const currentDisplayedTags = Object.keys(this.topTags);
+
+    currentDisplayedTags.forEach((topTagKey, i) => {
+      const currentWordTag = this.topTags[topTagKey];
+
+      if (currentWordTag !== null) {
+        currentWordTag.layerIndex = i;
+        currentWordTag.draw();
+      }
+    });
+
+    this.alignBox();
+  }
+
+  _redrawBottomTags() {
+    const currentDisplayedTags = Object.keys(this.bottomTags);
+
+    currentDisplayedTags.forEach((bottomTagKey, i) => {
+      const currentWordTag = this.bottomTags[bottomTagKey];
+
+      if (currentWordTag !== null) {
+        currentWordTag.layerIndex = i;
+        currentWordTag.draw();
+      }
+    });
+
+    this.alignBox();
   }
 
   /**
@@ -139,28 +197,56 @@ class Word {
    * @param {String} category
    */
   setBottomTagCategory(category) {
-    if (this.bottomTag) {
-      this.bottomTag.remove();
-      this.bottomTag = null;
-    }
-
-    // Not all categories of tags will be available for all Words
     if (!this.registeredTags[category]) {
       return;
     }
 
     this.bottomTagCategory = category;
+
     if (this.initialised) {
-      this.bottomTag = new WordTag(
-        this.registeredTags[category],
-        this,
-        this.config,
-        false
-      );
+      const displayTag = category in this.registeredTags ? this.registeredTags[category] : "-";
+      const bottomTagKey = `${category}-${displayTag}`;
+
+      if (!(bottomTagKey in this.bottomTags)) {
+        const currentDisplayedTags = Object.keys(this.bottomTags);
+
+        this.bottomTags[bottomTagKey] = new WordTag(
+          displayTag,
+          this,
+          this.config,
+          false,
+          true,
+          currentDisplayedTags.length
+        );
+      }
+      else {
+        this.removeBottomTagCategory(category);
+      }
 
       // Since one of the Word's tags has changed, recalculate/realign its
       // bounding box
       this.alignBox();
+    }
+  }
+
+  removeBottomTagCategory(category) {
+    const displayTag = category in this.registeredTags ? this.registeredTags[category] : "-";
+    const bottomTagKey = `${category}-${displayTag}`;
+    const bottomTagKeys = Object.keys(this.bottomTags);
+
+    if (bottomTagKeys.length > 1) {
+      const tag = this.bottomTags[bottomTagKey];
+
+      if (tag) {
+        tag.remove();
+      }
+
+      delete this.bottomTags[bottomTagKey];
+
+      this._redrawBottomTags();
+
+      this.alignBox();
+
     }
   }
 
@@ -206,18 +292,35 @@ class Word {
     // ------------------------
     // Draw in this Word's tags
     if (this.topTagCategory) {
-      this.topTag = new WordTag(
-        this.registeredTags[this.topTagCategory],
-        this,
-        this.config
-      );
+      const displayTag = this.registeredTags[this.topTagCategory];
+
+      if (displayTag) {
+        this.topTags[displayTag] = new WordTag(
+          displayTag,
+          this,
+          this.config,
+          true,
+          true,
+          0
+        );
+      }
     }
+    else {
+      const topTagKey = `empty`;
+      this.topTags[topTagKey] = null;
+    }
+
+
     if (this.bottomTagCategory) {
-      this.bottomTag = new WordTag(
-        this.registeredTags[this.bottomTagCategory],
+      const displayTag = this.registeredTags[this.bottomTagCategory];
+
+      this.bottomTags[displayTag] = new WordTag(
+        displayTag,
         this,
         this.config,
-        false
+        false,
+        true,
+        0
       );
     }
 
@@ -325,11 +428,24 @@ class Word {
     this.svgText.move(-currentBox.x, -currentBox.height);
     this._textBbox = this.svgText.bbox();
 
-    if (this.topTag) {
-      this.topTag.centre();
+    const currentDisplayedTopTags = Object.keys(this.topTags);
+
+    if (currentDisplayedTopTags.length > 0) {
+      currentDisplayedTopTags.forEach((displayedTag) => {
+        const tag = this.topTags[displayedTag];
+
+        if (tag) {
+          tag.centre();
+        }
+      });
     }
-    if (this.bottomTag) {
-      this.bottomTag.centre();
+
+    const currentDisplayedBottomTags = Object.keys(this.bottomTags);
+
+    if (currentDisplayedBottomTags.length > 0) {
+      currentDisplayedBottomTags.forEach((displayedTag) => {
+        this.bottomTags[displayedTag].centre();
+      });
     }
 
     // Generally, we will only need to move things around if the WordTags

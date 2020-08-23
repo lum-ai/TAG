@@ -528,7 +528,7 @@ class Main {
 
     // Create a virtual download link and simulate a click on it (using the
     // native `.click()` method, since jQuery cannot `.trigger()` it
-    $(`&lt;a 
+    $(`&lt;a
       href="data:image/svg+xml;charset=utf-8,${encodeURIComponent(exportedSVG)}"
       download="tag.svg">&lt;/a>`)
       .appendTo($("body"))[0]
@@ -644,6 +644,19 @@ class Main {
     this.rowManager.resizeAll();
   }
 
+  removeTopTagCategory(category) {
+    this.words.forEach((word) => {
+      word.removeTopTagCategory(category);
+      word.passingLinks.forEach((link) => link.draw());
+    });
+
+    // (Re-)colour the labels
+    this.taxonomyManager.colour(this.words);
+
+    // Always resize when the set of visible Links may have changed
+    this.rowManager.resizeAll();
+  }
+
   /**
    * Shows the specified category of bottom Word tags
    * @param category
@@ -656,6 +669,15 @@ class Main {
     });
 
     // Always resize when the set of visible Links may have changed
+    this.rowManager.resizeAll();
+  }
+
+  removeBottomTagCategory(category) {
+    this.words.forEach((word) => {
+      word.removeBottomTagCategory(category);
+      word.passingLinks.forEach((link) => link.draw());
+    });
+
     this.rowManager.resizeAll();
   }
 
