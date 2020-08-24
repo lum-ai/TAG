@@ -224,49 +224,49 @@ $(async () => {
       uiTag.setBottomLinkCategory($optionBottomLinks.val());
     });
 
-    // [Categories for top tags]
-    // We will populate the select menu and add a change handler
-    const $optionTopTags = $("#tag-option-top-tags")
-      .empty()
-      .append($("<option value='none'>None</option>"));
-
     const currentTopTags = uiTag.getOption("topTagCategory");
-    for (const category of uiTag.getTagCategories()) {
-      const $option = $("<option></option>")
-        .attr("value", category)
-        .text(_.upperFirst(category));
+    const topTagsContainer = $("#top-tags-container");
 
+    for (const category of uiTag.getTagCategories()) {
       if (category === currentTopTags) {
-        $option.prop("selected", true);
+        continue;
       }
 
-      $optionTopTags.append($option);
-    }
-    $optionTopTags.off("change").on("change", () => {
-      uiTag.setTopTagCategory($optionTopTags.val());
-    });
+      const optionContainer = $("<div class=\"custom-control custom-checkbox\">");
+      const optionLabel = $(`<label class="custom-control-label" for="tag-option-top-tag-${category}">`).html(category);
+      const option = $(`<input type="checkbox" class="custom-control-input" id="tag-option-top-tag-${category}">`).attr("value", category);
 
-    // [Categories for bottom tags]
-    // We will populate the select menu and add a change handler
-    const $optionBottomTags = $("#tag-option-bottom-tags")
-      .empty()
-      .append($("<option value='none'>None</option>"));
+      option.off("change").on("change", () => {
+        uiTag.setTopTagCategory(option.val());
+      });
+
+      optionContainer.append(option);
+      optionContainer.append(optionLabel);
+
+      topTagsContainer.append(optionContainer);
+    }
 
     const currentBottomTags = uiTag.getOption("bottomTagCategory");
-    for (const category of uiTag.getTagCategories()) {
-      const $option = $("<option></option>")
-        .attr("value", category)
-        .text(_.upperFirst(category));
+    const bottomTagsContainer = $("#bottom-tags-container");
 
+    for (const category of uiTag.getTagCategories()) {
       if (category === currentBottomTags) {
-        $option.prop("selected", true);
+        continue;
       }
 
-      $optionBottomTags.append($option);
+      const optionContainer = $("<div class=\"custom-control custom-checkbox\">");
+      const optionLabel = $(`<label class="custom-control-label" for="tag-option-bottom-tag-${category}">`).html(category);
+      const option = $(`<input type="checkbox" class="custom-control-input" id="tag-option-bottom-tag-${category}">`).attr("value", category);
+
+      option.off("change").on("change", () => {
+        uiTag.setTopTagCategory(option.val());
+      });
+
+      optionContainer.append(option);
+      optionContainer.append(optionLabel);
+
+      bottomTagsContainer.append(optionContainer);
     }
-    $optionBottomTags.off("change").on("change", () => {
-      uiTag.setBottomTagCategory($optionBottomTags.val());
-    });
   }
 
   refreshLinkAndTagCategories();
