@@ -18,8 +18,9 @@ class WordTag {
    * @param {Boolean} top - True if this WordTag should be drawn above the
    *     parent Word, false if it should be drawn below
    */
-  constructor(val, word, config, top = true, multiLayer = false, layerIndex = 0) {
-    this.val = val;
+  constructor(tag, word, config, top = true, multiLayer = false, layerIndex = 0) {
+    this.tag = tag;
+    this.val = this.tag.val;
     this.word = word;
     this.config = config;
     this.top = top;
@@ -220,6 +221,8 @@ class WordTag {
     this.editingRect.remove();
     this.editingRect = null;
     this.val = this.val.trim();
+    this.tag.val = this.val;
+
     if (!this.val) {
       this.remove();
     } else {

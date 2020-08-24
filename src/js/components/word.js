@@ -22,9 +22,13 @@ class Word {
    * @param {Number} idx - The index of this Word within the
    *     currently-parsed document
    */
-  constructor(text, idx) {
+  constructor(token) {
+    const {text, idx} = token;
+
     this.text = text;
     this.idx = idx;
+
+    this.token = token;
 
     // Optional properties that may be set later
     // -----------------------------------------
@@ -119,7 +123,7 @@ class Word {
 
     if (this.initialised) {
       const displayTag = category in this.registeredTags ? this.registeredTags[category] : "-";
-      const topTagKey = `${category}-${displayTag}`;
+      const topTagKey = `${category}-${displayTag.val}`;
 
       if (!(topTagKey in this.topTags)) {
         const currentDisplayedTags = Object.keys(this.topTags);
@@ -143,7 +147,7 @@ class Word {
 
   removeTopTagCategory(category) {
     const displayTag = category in this.registeredTags ? this.registeredTags[category] : "-";
-    const topTagKey = `${category}-${displayTag}`;
+    const topTagKey = `${category}-${displayTag.val}`;
     const topTagKeys = Object.keys(this.topTags);
 
     if (topTagKeys.length > 1) {
@@ -205,7 +209,7 @@ class Word {
 
     if (this.initialised) {
       const displayTag = category in this.registeredTags ? this.registeredTags[category] : "-";
-      const bottomTagKey = `${category}-${displayTag}`;
+      const bottomTagKey = `${category}-${displayTag.val}`;
 
       if (!(bottomTagKey in this.bottomTags)) {
         const currentDisplayedTags = Object.keys(this.bottomTags);
@@ -231,7 +235,7 @@ class Word {
 
   removeBottomTagCategory(category) {
     const displayTag = category in this.registeredTags ? this.registeredTags[category] : "-";
-    const bottomTagKey = `${category}-${displayTag}`;
+    const bottomTagKey = `${category}-${displayTag.val}`;
     const bottomTagKeys = Object.keys(this.bottomTags);
 
     if (bottomTagKeys.length > 1) {

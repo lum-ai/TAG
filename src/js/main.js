@@ -58,6 +58,7 @@ class Main {
 
     // Registered Parsers
     this.parsers = parsers;
+    this.parsedData = null;
 
     // Tokens and links that are currently drawn on the visualisation
     this.words = [];
@@ -88,8 +89,13 @@ class Main {
     }
 
     this.clear();
-    const parsedData = this.parsers[format].parse(dataObjects);
-    this.init(parsedData);
+
+    this.parsedData = this.parsers[format].parse(dataObjects);
+    this.parsedDataFormat = format;
+
+    this.svgListeners = {};
+
+    this.init();
     this.draw();
   }
 
@@ -140,9 +146,8 @@ class Main {
    * Prepares all the Rows/Words/Links.
    * Adds all Words/WordClusters to Rows in the visualisation, but does not draw
    * Links or colour the various Words/WordTags
-   * @param {Object} parsedData
    */
-  init(parsedData) {
+  init() {
     // Convert the parsed data into visualisation objects (by adding
     // SVG/visualisation-related data and methods)
     // TODO: Refactor the Word/WordTag/WordCluster/Link system instead of
@@ -153,15 +158,15 @@ class Main {
     // Records LongLabels to convert later.
     this.words = [];
     const longLabels = [];
-    parsedData.tokens.forEach((token) => {
+    this.parsedData.tokens.forEach((token) => {
       // Basic
-      const word = new Word(token.text, token.idx);
+      const word = new Word(token);
       this.words.push(word);
 
       _.forOwn(token.registeredLabels, (label, category) => {
         if (_.has(label, "token")) {
           // Label
-          word.registerTag(category, label.val);
+          word.registerTag(category, label);
         } else if (_.has(label, "tokens")) {
           // LongLabel
           if (longLabels.indexOf(label) < 0) {
@@ -190,7 +195,7 @@ class Main {
     // N.B.: Assumes that nested Links are parsed earlier in the array.
     this.links = [];
     const linksById = {};
-    parsedData.links.forEach((link) => {
+    this.parsedData.links.forEach((link) => {
       let newTrigger = null;
       const newArgs = [];
 
@@ -665,11 +670,14 @@ class Main {
       this.rowManager.resizeRow(event.detail.object.idx, event.detail.y);
     });
 
-    // svg.on('label-updated', function(e) {
-    //   // TODO: so so incomplete
-    //   let color = tm.getColor(e.detail.label, e.detail.object);
-    //   e.detail.object.node.style.fill = color;
-    // });
+    this.svg.on("label-updated", (e) => {
+      this.svgListeners["label-updated"].forEach((listener) => {
+        listener.call(this, this.parsedData);
+      });
+      // // TODO: so so incomplete
+      // let color = tm.getColor(e.detail.label, e.detail.object);
+      // e.detail.object.node.style.fill = color;
+    });
 
     this.svg.on("word-move-start", () => {
       this.links.forEach((link) => {
@@ -753,6 +761,15 @@ class Main {
 
   yLine(y) {
     this.svg.line(0, y, 1000, y).stroke({ width: 1 });
+  }
+
+  addSvgListener(svgEvent, listener) {
+    if (svgEvent in this.svgListeners) {
+      this.svgListeners[svgEvent].push(listener);
+    }
+    else {
+      this.svgListeners[svgEvent] = [listener];
+    }
   }
 }
 
