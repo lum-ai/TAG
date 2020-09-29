@@ -1,0 +1,342 @@
+{
+    "numTokens": 23,
+    "fields": [
+        {
+            "$type": "ai.lum.odinson.TokensField",
+            "name": "raw",
+            "tokens": [
+                "Recently",
+                ",",
+                "Hassler",
+                "et",
+                "al.",
+                "(",
+                "2016",
+                ")",
+                "found",
+                "that",
+                "pht4",
+                ";",
+                "6",
+                "mutant",
+                "Arabidopsis",
+                "plants",
+                "displayed",
+                "accelerated",
+                "senescence",
+                "induced",
+                "by",
+                "darkness",
+                "."
+            ],
+            "store": true
+        },
+        {
+            "$type": "ai.lum.odinson.TokensField",
+            "name": "word",
+            "tokens": [
+                "Recently",
+                ",",
+                "Hassler",
+                "et",
+                "al.",
+                "(",
+                "2016",
+                ")",
+                "found",
+                "that",
+                "pht4",
+                ";",
+                "6",
+                "mutant",
+                "Arabidopsis",
+                "plants",
+                "displayed",
+                "accelerated",
+                "senescence",
+                "induced",
+                "by",
+                "darkness",
+                "."
+            ]
+        },
+        {
+            "$type": "ai.lum.odinson.TokensField",
+            "name": "tag",
+            "tokens": [
+                "RB",
+                ",",
+                "NNP",
+                "FW",
+                "FW",
+                "-LRB-",
+                "CD",
+                "-RRB-",
+                "VBD",
+                "IN",
+                "NN",
+                ":",
+                "CD",
+                "NN",
+                "NNP",
+                "NNS",
+                "VBD",
+                "VBN",
+                "NN",
+                "VBN",
+                "IN",
+                "NN",
+                "."
+            ]
+        },
+        {
+            "$type": "ai.lum.odinson.TokensField",
+            "name": "lemma",
+            "tokens": [
+                "recently",
+                ",",
+                "Hassler",
+                "et",
+                "al.",
+                "(",
+                "2016",
+                ")",
+                "find",
+                "that",
+                "pht4",
+                ";",
+                "6",
+                "mutant",
+                "Arabidopsis",
+                "plant",
+                "display",
+                "accelerate",
+                "senescence",
+                "induce",
+                "by",
+                "darkness",
+                "."
+            ]
+        },
+        {
+            "$type": "ai.lum.odinson.TokensField",
+            "name": "entity",
+            "tokens": [
+                "O",
+                "O",
+                "O",
+                "O",
+                "O",
+                "O",
+                "O",
+                "O",
+                "O",
+                "O",
+                "B-Gene_or_gene_product",
+                "I-Gene_or_gene_product",
+                "I-Gene_or_gene_product",
+                "I-Gene_or_gene_product",
+                "I-Gene_or_gene_product",
+                "I-Gene_or_gene_product",
+                "O",
+                "O",
+                "B-BioProcess",
+                "O",
+                "O",
+                "O",
+                "O"
+            ]
+        },
+        {
+            "$type": "ai.lum.odinson.TokensField",
+            "name": "chunk",
+            "tokens": [
+                "B-ADVP",
+                "O",
+                "B-NP",
+                "I-NP",
+                "I-NP",
+                "I-NP",
+                "I-NP",
+                "I-NP",
+                "B-VP",
+                "B-SBAR",
+                "B-NP",
+                "O",
+                "B-NP",
+                "I-NP",
+                "I-NP",
+                "I-NP",
+                "B-VP",
+                "B-NP",
+                "I-NP",
+                "B-VP",
+                "B-PP",
+                "B-NP",
+                "O"
+            ]
+        },
+        {
+            "$type": "ai.lum.odinson.GraphField",
+            "name": "dependencies",
+            "edges": [
+                [
+                    18,
+                    17,
+                    "amod"
+                ],
+                [
+                    8,
+                    2,
+                    "nsubj"
+                ],
+                [
+                    19,
+                    21,
+                    "nmod_by"
+                ],
+                [
+                    2,
+                    6,
+                    "appos"
+                ],
+                [
+                    15,
+                    12,
+                    "nummod"
+                ],
+                [
+                    15,
+                    14,
+                    "compound"
+                ],
+                [
+                    4,
+                    3,
+                    "compound"
+                ],
+                [
+                    8,
+                    0,
+                    "advmod"
+                ],
+                [
+                    16,
+                    9,
+                    "mark"
+                ],
+                [
+                    8,
+                    16,
+                    "ccomp"
+                ],
+                [
+                    21,
+                    20,
+                    "case"
+                ],
+                [
+                    16,
+                    10,
+                    "nsubj"
+                ],
+                [
+                    2,
+                    4,
+                    "dep"
+                ],
+                [
+                    10,
+                    15,
+                    "dep"
+                ],
+                [
+                    16,
+                    18,
+                    "dobj"
+                ],
+                [
+                    18,
+                    19,
+                    "acl"
+                ],
+                [
+                    15,
+                    13,
+                    "compound"
+                ]
+            ],
+            "roots": [
+                8
+            ]
+        }
+    ],
+    "sentenceId": 20042,
+    "label": "ArabidopsisEvent",
+    "documentId": "PMC5435767",
+    "sentenceIndex": 96,
+    "words": [
+        "Recently",
+        ",",
+        "Hassler",
+        "et",
+        "al.",
+        "(",
+        "2016",
+        ")",
+        "found",
+        "that",
+        "pht4",
+        ";",
+        "6",
+        "mutant",
+        "Arabidopsis",
+        "plants",
+        "displayed",
+        "accelerated",
+        "senescence",
+        "induced",
+        "by",
+        "darkness",
+        "."
+    ],
+    "foundBy": "bioprocess-example",
+    "match": [
+        {
+            "span": {
+                "start": 16,
+                "end": 17
+            },
+            "captures": [
+                {
+                    "context": {
+                        "span": {
+                            "start": 14,
+                            "end": 15
+                        },
+                        "captures": []
+                    }
+                },
+                {
+                    "subject": {
+                        "span": {
+                            "start": 10,
+                            "end": 16
+                        },
+                        "captures": []
+                    }
+                },
+                {
+                    "object": {
+                        "span": {
+                            "start": 18,
+                            "end": 19
+                        },
+                        "captures": []
+                    }
+                }
+            ]
+        }
+    ],
+    "id": 2
+}
