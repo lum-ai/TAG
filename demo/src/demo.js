@@ -226,15 +226,17 @@ $(async () => {
 
     const currentTopTags = uiTag.getOption("topTagCategory");
     const topTagsContainer = $("#top-tags-container");
+    topTagsContainer.html("");
 
     for (const category of uiTag.getTagCategories()) {
-      if (category === currentTopTags) {
-        continue;
-      }
-
-      const optionContainer = $("<div class=\"custom-control custom-checkbox\">");
-      const optionLabel = $(`<label class="custom-control-label" for="tag-option-top-tag-${category}">`).html(category);
-      const option = $(`<input type="checkbox" class="custom-control-input" id="tag-option-top-tag-${category}">`).attr("value", category);
+      const checked = category === currentTopTags ? "checked" : "";
+      const optionContainer = $('<div class="custom-control custom-checkbox">');
+      const optionLabel = $(
+        `<label class="custom-control-label" for="tag-option-top-tag-${category}">`
+      ).html(category);
+      const option = $(
+        `<input type="checkbox" class="custom-control-input" id="tag-option-top-tag-${category}" ${checked}>`
+      ).attr("value", category);
 
       option.off("change").on("change", () => {
         uiTag.setTopTagCategory(option.val());
@@ -248,15 +250,20 @@ $(async () => {
 
     const currentBottomTags = uiTag.getOption("bottomTagCategory");
     const bottomTagsContainer = $("#bottom-tags-container");
+    bottomTagsContainer.html("");
 
     for (const category of uiTag.getTagCategories()) {
       if (category === currentBottomTags) {
         continue;
       }
 
-      const optionContainer = $("<div class=\"custom-control custom-checkbox\">");
-      const optionLabel = $(`<label class="custom-control-label" for="tag-option-bottom-tag-${category}">`).html(category);
-      const option = $(`<input type="checkbox" class="custom-control-input" id="tag-option-bottom-tag-${category}">`).attr("value", category);
+      const optionContainer = $('<div class="custom-control custom-checkbox">');
+      const optionLabel = $(
+        `<label class="custom-control-label" for="tag-option-bottom-tag-${category}">`
+      ).html(category);
+      const option = $(
+        `<input type="checkbox" class="custom-control-input" id="tag-option-bottom-tag-${category}">`
+      ).attr("value", category);
 
       option.off("change").on("change", () => {
         uiTag.setTopTagCategory(option.val());

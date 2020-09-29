@@ -1,20 +1,21 @@
 import Token from "./components/Token";
 import Link from "./components/Link";
+import LongLabel from "./components/LongLabel";
 
 /**
  * Odinson parser class
  */
-class CustomParser {
+class OdinsonParser {
   /**
-	 * The class constructor
-	 */
+   * The class constructor
+   */
   constructor() {
     // class members, all private
 
     /** @private */
     this.data = {
       tokens: [],
-      links: [],
+      links: []
     };
 
     /** @private */
@@ -25,14 +26,14 @@ class CustomParser {
   }
 
   /**
-	 * Main function which parses the sentence data. This works with both an
-	 * array (from which it will extract the first entry) and a single object.
-	 *
-	 * @public
-	 * @param {Array|Object} dataObject Sentence data consisting of an array or single object
-	 *
-	 * @returns {Object} Object containing the parsed tokens and the links
-	 */
+   * Main function which parses the sentence data. This works with both an
+   * array (from which it will extract the first entry) and a single object.
+   *
+   * @public
+   * @param {Array|Object} dataObject Sentence data consisting of an array or single object
+   *
+   * @returns {Object} Object containing the parsed tokens and the links
+   */
   parse(dataObject) {
     this.reset();
 
@@ -40,32 +41,37 @@ class CustomParser {
 
     this.parsedDocuments[0] = this._parseSentence(toParse, Date.now());
 
+    toParse.match.forEach((mention) => {
+      this._parseMention({ mention, relType: toParse.label });
+    });
+
     return this.data;
   }
 
   /**
-	 * Reinitialize all class properties.
-	 *
-	 * @private
-	 */
+   * Reinitialize all class properties.
+   *
+   * @private
+   */
   reset() {
     this.data = {
       tokens: [],
-      links: [],
+      links: []
     };
 
     this.parsedDocuments = {};
+
     this.lastTokenIdx = -1;
   }
 
   /**
-	 * Method to parse and extract tokens and links from a single sentence.
-	 *
-	 * @param {Object} sentence Sentence object
-	 * @param {String} docId The sentence document id
-	 *
-	 * @returns {Object} The document object that contains parsed tokens and links.
-	 */
+   * Method to parse and extract tokens and links from a single sentence.
+   *
+   * @param {Object} sentence Sentence object
+   * @param {String} docId The sentence document id
+   *
+   * @returns {Object} The document object that contains parsed tokens and links.
+   */
   _parseSentence(sentence, docId) {
     const thisDocument = {};
     const sentenceId = `sentence-${Date.now()}`;
@@ -78,7 +84,7 @@ class CustomParser {
       type,
       index,
       edge,
-      sentenceData,
+      sentenceData
     ) => {
       return new Link(
         `${localDocId}-${sentenceIdLocal}-${type}-${index}`,
@@ -86,11 +92,11 @@ class CustomParser {
         [
           {
             anchor: sentenceData[edge[1]],
-            type: edge[2],
-          },
+            type: edge[2]
+          }
         ],
         edge[2],
-        type,
+        type
       );
     };
 
@@ -110,7 +116,10 @@ class CustomParser {
     }
 
     for (let i = 0; i < sentenceFields.word.length; i += 1) {
-      const thisToken = new Token(sentenceFields.word[i], i + this.lastTokenIdx + 1);
+      const thisToken = new Token(
+        sentenceFields.word[i],
+        i + this.lastTokenIdx + 1
+      );
 
       if (sentenceFields.raw) {
         thisToken.registerLabel("raw", sentenceFields.raw[i]);
@@ -123,7 +132,6 @@ class CustomParser {
       }
       if (sentenceFields.entity) {
         thisToken.registerLabel("entity", sentenceFields.entity[i]);
-        thisToken.registerLabel("default", sentenceFields.entity[i]);
       }
       if (sentenceFields.norms) {
         thisToken.registerLabel("norm", sentenceFields.norms[i]);
@@ -143,7 +151,14 @@ class CustomParser {
         const edge = sentenceGraph.edges[i];
 
         this.data.links.push(
-          createLinkInstance(docId, sentenceId, "universal-basic", i, edge, thisSentence),
+          createLinkInstance(
+            docId,
+            sentenceId,
+            "universal-basic",
+            i,
+            edge,
+            thisSentence
+          )
         );
 
         this.data.links.push(
@@ -153,8 +168,8 @@ class CustomParser {
             "universal-enhanced",
             i,
             edge,
-            thisSentence,
-          ),
+            thisSentence
+          )
         );
       }
     }
@@ -163,6 +178,82 @@ class CustomParser {
 
     return thisDocument;
   }
+
+  _generateId() {
+    // Math.random should be unique because of its seeding algorithm.
+    // Convert it to base 36 (numbers + letters), and grab the first 9 characters
+    // after the decimal.
+    return (
+      "_" +
+      Math.random()
+        .toString(36)
+        .substr(2, 9)
+    );
+  }
+
+  _getLabelForTokens(tokens, captureTypeName) {
+    if (tokens.length > 1) {
+      const longLabel = LongLabel.registerLongLabel(
+        "default",
+        captureTypeName,
+        tokens
+      );
+
+      return longLabel;
+    } else {
+      tokens[0].registerLabel("default", captureTypeName);
+
+      return tokens[0];
+    }
+  }
+
+  _parseMention({ mention, relType }) {
+    const { span, captures } = mention;
+    const linkArgs = [];
+
+    const spanTokens = this.data.tokens.slice(span.start, span.end);
+    const trigger = this._getLabelForTokens(spanTokens, relType);
+
+    captures.forEach((capture) => {
+      const captureTypeNames = Object.keys(capture);
+
+      captureTypeNames.forEach((captureTypeName) => {
+        const captureType = capture[captureTypeName];
+        const captureSpan = captureType.span;
+
+        const tokens = this.data.tokens.slice(
+          captureSpan.start,
+          captureSpan.end
+        );
+
+        const tokenLabel = this._getLabelForTokens(tokens, captureTypeName);
+
+        if (tokens.length === 1) {
+          linkArgs.push({
+            anchor: tokenLabel,
+            type: captureTypeName
+          });
+        }
+      });
+    });
+
+    // Done; prepare the new Link
+    const linkId = this._generateId();
+    const link = new Link(
+      // eventId
+      linkId,
+      // Trigger
+      trigger,
+      // Arguments
+      linkArgs,
+      // Relation type
+      relType
+    );
+
+    this.data.links.push(link);
+
+    return link;
+  }
 }
 
-export default CustomParser;
+export default OdinsonParser;

@@ -1014,6 +1014,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = void 0;
 
+var _slicedToArray2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/slicedToArray"));
+
 var _classCallCheck2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/classCallCheck"));
 
 var _createClass2 = _interopRequireDefault(_dereq_("@babel/runtime/helpers/createClass"));
@@ -1022,15 +1024,17 @@ var _Token = _interopRequireDefault(_dereq_("./components/Token"));
 
 var _Link = _interopRequireDefault(_dereq_("./components/Link"));
 
+var _LongLabel = _interopRequireDefault(_dereq_("./components/LongLabel"));
+
 /**
  * Odinson parser class
  */
-var CustomParser = /*#__PURE__*/function () {
+var OdinsonParser = /*#__PURE__*/function () {
   /**
-  * The class constructor
-  */
-  function CustomParser() {
-    (0, _classCallCheck2["default"])(this, CustomParser);
+   * The class constructor
+   */
+  function OdinsonParser() {
+    (0, _classCallCheck2["default"])(this, OdinsonParser);
     // class members, all private
 
     /** @private */
@@ -1041,34 +1045,40 @@ var CustomParser = /*#__PURE__*/function () {
     /** @private */
 
     this.parsedDocuments = {};
+    this.parsedMentions = {};
     /** @private */
 
     this.lastTokenIdx = -1;
   }
   /**
-  * Main function which parses the sentence data. This works with both an
-  * array (from which it will extract the first entry) and a single object.
-  *
-  * @public
-  * @param {Array|Object} dataObject Sentence data consisting of an array or single object
-  *
-  * @returns {Object} Object containing the parsed tokens and the links
-  */
+   * Main function which parses the sentence data. This works with both an
+   * array (from which it will extract the first entry) and a single object.
+   *
+   * @public
+   * @param {Array|Object} dataObject Sentence data consisting of an array or single object
+   *
+   * @returns {Object} Object containing the parsed tokens and the links
+   */
 
 
-  (0, _createClass2["default"])(CustomParser, [{
+  (0, _createClass2["default"])(OdinsonParser, [{
     key: "parse",
     value: function parse(dataObject) {
+      var _this = this;
+
       this.reset();
       var toParse = Array.isArray(dataObject) ? dataObject[0] : dataObject;
       this.parsedDocuments[0] = this._parseSentence(toParse, Date.now());
+      toParse.match.forEach(function (mention) {
+        _this._parseMention(mention);
+      });
       return this.data;
     }
     /**
-    * Reinitialize all class properties.
-    *
-    * @private
-    */
+     * Reinitialize all class properties.
+     *
+     * @private
+     */
 
   }, {
     key: "reset",
@@ -1078,16 +1088,17 @@ var CustomParser = /*#__PURE__*/function () {
         links: []
       };
       this.parsedDocuments = {};
+      this.parsedMentions = {};
       this.lastTokenIdx = -1;
     }
     /**
-    * Method to parse and extract tokens and links from a single sentence.
-    *
-    * @param {Object} sentence Sentence object
-    * @param {String} docId The sentence document id
-    *
-    * @returns {Object} The document object that contains parsed tokens and links.
-    */
+     * Method to parse and extract tokens and links from a single sentence.
+     *
+     * @param {Object} sentence Sentence object
+     * @param {String} docId The sentence document id
+     *
+     * @returns {Object} The document object that contains parsed tokens and links.
+     */
 
   }, {
     key: "_parseSentence",
@@ -1134,7 +1145,6 @@ var CustomParser = /*#__PURE__*/function () {
 
         if (sentenceFields.entity) {
           thisToken.registerLabel("entity", sentenceFields.entity[_i]);
-          thisToken.registerLabel("default", sentenceFields.entity[_i]);
         }
 
         if (sentenceFields.norms) {
@@ -1154,6 +1164,7 @@ var CustomParser = /*#__PURE__*/function () {
       if (sentenceGraph) {
         for (var _i2 = 0; _i2 < sentenceGraph.edges.length; _i2 += 1) {
           var edge = sentenceGraph.edges[_i2];
+          this.data.links.push(createLinkInstance(docId, sentenceId, "default", _i2, edge, thisSentence));
           this.data.links.push(createLinkInstance(docId, sentenceId, "universal-basic", _i2, edge, thisSentence));
           this.data.links.push(createLinkInstance(docId, sentenceId, "universal-enhanced", _i2, edge, thisSentence));
         }
@@ -1162,14 +1173,42 @@ var CustomParser = /*#__PURE__*/function () {
       thisDocument.sentences.push(thisSentence);
       return thisDocument;
     }
+  }, {
+    key: "_parseMention",
+    value: function _parseMention(mention) {
+      var _this2 = this;
+
+      var captures = mention.captures;
+      captures.forEach(function (capture) {
+        var captureTypeNames = Object.keys(capture);
+        captureTypeNames.forEach(function (captureTypeName) {
+          var captureType = capture[captureTypeName];
+          var captureSpan = captureType.span;
+
+          var tokens = _this2.data.tokens.slice(captureSpan.start, captureSpan.end);
+
+          if (tokens.length > 1) {
+            var longLabel = _LongLabel["default"].registerLongLabel("default", captureTypeName, tokens);
+
+            _this2.parsedMentions[captureTypeName] = longLabel;
+          } else {
+            tokens[0].registerLabel("default", captureTypeName);
+
+            var _tokens = (0, _slicedToArray2["default"])(tokens, 1);
+
+            _this2.parsedMentions[captureTypeName] = _tokens[0];
+          }
+        });
+      });
+    }
   }]);
-  return CustomParser;
+  return OdinsonParser;
 }();
 
-var _default = CustomParser;
+var _default = OdinsonParser;
 exports["default"] = _default;
 
-},{"./components/Link":3,"./components/Token":5,"@babel/runtime/helpers/classCallCheck":11,"@babel/runtime/helpers/createClass":12,"@babel/runtime/helpers/interopRequireDefault":13}],8:[function(_dereq_,module,exports){
+},{"./components/Link":3,"./components/LongLabel":4,"./components/Token":5,"@babel/runtime/helpers/classCallCheck":11,"@babel/runtime/helpers/createClass":12,"@babel/runtime/helpers/interopRequireDefault":13,"@babel/runtime/helpers/slicedToArray":17}],8:[function(_dereq_,module,exports){
 function _arrayLikeToArray(arr, len) {
   if (len == null || len > arr.length) len = arr.length;
 
@@ -16372,7 +16411,7 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
   var undefined;
 
   /** Used as the semantic version number. */
-  var VERSION = '4.17.15';
+  var VERSION = '4.17.20';
 
   /** Used as the size to enable large array optimizations. */
   var LARGE_ARRAY_SIZE = 200;
@@ -20079,8 +20118,21 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
      * @returns {Array} Returns the new sorted array.
      */
     function baseOrderBy(collection, iteratees, orders) {
+      if (iteratees.length) {
+        iteratees = arrayMap(iteratees, function(iteratee) {
+          if (isArray(iteratee)) {
+            return function(value) {
+              return baseGet(value, iteratee.length === 1 ? iteratee[0] : iteratee);
+            }
+          }
+          return iteratee;
+        });
+      } else {
+        iteratees = [identity];
+      }
+
       var index = -1;
-      iteratees = arrayMap(iteratees.length ? iteratees : [identity], baseUnary(getIteratee()));
+      iteratees = arrayMap(iteratees, baseUnary(getIteratee()));
 
       var result = baseMap(collection, function(value, key, collection) {
         var criteria = arrayMap(iteratees, function(iteratee) {
@@ -20337,6 +20389,10 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
         var key = toKey(path[index]),
             newValue = value;
 
+        if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
+          return object;
+        }
+
         if (index != lastIndex) {
           var objValue = nested[key];
           newValue = customizer ? customizer(objValue, key, nested) : undefined;
@@ -20489,11 +20545,14 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
      *  into `array`.
      */
     function baseSortedIndexBy(array, value, iteratee, retHighest) {
-      value = iteratee(value);
-
       var low = 0,
-          high = array == null ? 0 : array.length,
-          valIsNaN = value !== value,
+          high = array == null ? 0 : array.length;
+      if (high === 0) {
+        return 0;
+      }
+
+      value = iteratee(value);
+      var valIsNaN = value !== value,
           valIsNull = value === null,
           valIsSymbol = isSymbol(value),
           valIsUndefined = value === undefined;
@@ -21978,10 +22037,11 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
       if (arrLength != othLength && !(isPartial && othLength > arrLength)) {
         return false;
       }
-      // Assume cyclic values are equal.
-      var stacked = stack.get(array);
-      if (stacked && stack.get(other)) {
-        return stacked == other;
+      // Check that cyclic values are equal.
+      var arrStacked = stack.get(array);
+      var othStacked = stack.get(other);
+      if (arrStacked && othStacked) {
+        return arrStacked == other && othStacked == array;
       }
       var index = -1,
           result = true,
@@ -22143,10 +22203,11 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
           return false;
         }
       }
-      // Assume cyclic values are equal.
-      var stacked = stack.get(object);
-      if (stacked && stack.get(other)) {
-        return stacked == other;
+      // Check that cyclic values are equal.
+      var objStacked = stack.get(object);
+      var othStacked = stack.get(other);
+      if (objStacked && othStacked) {
+        return objStacked == other && othStacked == object;
       }
       var result = true;
       stack.set(object, other);
@@ -25527,6 +25588,10 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
      * // The `_.property` iteratee shorthand.
      * _.filter(users, 'active');
      * // => objects for ['barney']
+     *
+     * // Combining several predicates using `_.overEvery` or `_.overSome`.
+     * _.filter(users, _.overSome([{ 'age': 36 }, ['age', 40]]));
+     * // => objects for ['fred', 'barney']
      */
     function filter(collection, predicate) {
       var func = isArray(collection) ? arrayFilter : baseFilter;
@@ -26276,15 +26341,15 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
      * var users = [
      *   { 'user': 'fred',   'age': 48 },
      *   { 'user': 'barney', 'age': 36 },
-     *   { 'user': 'fred',   'age': 40 },
+     *   { 'user': 'fred',   'age': 30 },
      *   { 'user': 'barney', 'age': 34 }
      * ];
      *
      * _.sortBy(users, [function(o) { return o.user; }]);
-     * // => objects for [['barney', 36], ['barney', 34], ['fred', 48], ['fred', 40]]
+     * // => objects for [['barney', 36], ['barney', 34], ['fred', 48], ['fred', 30]]
      *
      * _.sortBy(users, ['user', 'age']);
-     * // => objects for [['barney', 34], ['barney', 36], ['fred', 40], ['fred', 48]]
+     * // => objects for [['barney', 34], ['barney', 36], ['fred', 30], ['fred', 48]]
      */
     var sortBy = baseRest(function(collection, iteratees) {
       if (collection == null) {
@@ -31159,11 +31224,11 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
 
       // Use a sourceURL for easier debugging.
       // The sourceURL gets injected into the source that's eval-ed, so be careful
-      // with lookup (in case of e.g. prototype pollution), and strip newlines if any.
-      // A newline wouldn't be a valid sourceURL anyway, and it'd enable code injection.
+      // to normalize all kinds of whitespace, so e.g. newlines (and unicode versions of it) can't sneak in
+      // and escape the comment, thus injecting code that gets evaled.
       var sourceURL = '//# sourceURL=' +
         (hasOwnProperty.call(options, 'sourceURL')
-          ? (options.sourceURL + '').replace(/[\r\n]/g, ' ')
+          ? (options.sourceURL + '').replace(/\s/g, ' ')
           : ('lodash.templateSources[' + (++templateCounter) + ']')
         ) + '\n';
 
@@ -31196,8 +31261,6 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
 
       // If `variable` is not specified wrap a with-statement around the generated
       // code to add the data object to the top of the scope chain.
-      // Like with sourceURL, we take care to not check the option's prototype,
-      // as this configuration is a code injection vector.
       var variable = hasOwnProperty.call(options, 'variable') && options.variable;
       if (!variable) {
         source = 'with (obj) {\n' + source + '\n}\n';
@@ -31904,6 +31967,9 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
      * values against any array or object value, respectively. See `_.isEqual`
      * for a list of supported value comparisons.
      *
+     * **Note:** Multiple values can be checked by combining several matchers
+     * using `_.overSome`
+     *
      * @static
      * @memberOf _
      * @since 3.0.0
@@ -31919,6 +31985,10 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
      *
      * _.filter(objects, _.matches({ 'a': 4, 'c': 6 }));
      * // => [{ 'a': 4, 'b': 5, 'c': 6 }]
+     *
+     * // Checking for several possible values
+     * _.filter(objects, _.overSome([_.matches({ 'a': 1 }), _.matches({ 'a': 4 })]));
+     * // => [{ 'a': 1, 'b': 2, 'c': 3 }, { 'a': 4, 'b': 5, 'c': 6 }]
      */
     function matches(source) {
       return baseMatches(baseClone(source, CLONE_DEEP_FLAG));
@@ -31932,6 +32002,9 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
      * **Note:** Partial comparisons will match empty array and empty object
      * `srcValue` values against any array or object value, respectively. See
      * `_.isEqual` for a list of supported value comparisons.
+     *
+     * **Note:** Multiple values can be checked by combining several matchers
+     * using `_.overSome`
      *
      * @static
      * @memberOf _
@@ -31949,6 +32022,10 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
      *
      * _.find(objects, _.matchesProperty('a', 4));
      * // => { 'a': 4, 'b': 5, 'c': 6 }
+     *
+     * // Checking for several possible values
+     * _.filter(objects, _.overSome([_.matchesProperty('a', 1), _.matchesProperty('a', 4)]));
+     * // => [{ 'a': 1, 'b': 2, 'c': 3 }, { 'a': 4, 'b': 5, 'c': 6 }]
      */
     function matchesProperty(path, srcValue) {
       return baseMatchesProperty(path, baseClone(srcValue, CLONE_DEEP_FLAG));
@@ -32172,6 +32249,10 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
      * Creates a function that checks if **all** of the `predicates` return
      * truthy when invoked with the arguments it receives.
      *
+     * Following shorthands are possible for providing predicates.
+     * Pass an `Object` and it will be used as an parameter for `_.matches` to create the predicate.
+     * Pass an `Array` of parameters for `_.matchesProperty` and the predicate will be created using them.
+     *
      * @static
      * @memberOf _
      * @since 4.0.0
@@ -32198,6 +32279,10 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
      * Creates a function that checks if **any** of the `predicates` return
      * truthy when invoked with the arguments it receives.
      *
+     * Following shorthands are possible for providing predicates.
+     * Pass an `Object` and it will be used as an parameter for `_.matches` to create the predicate.
+     * Pass an `Array` of parameters for `_.matchesProperty` and the predicate will be created using them.
+     *
      * @static
      * @memberOf _
      * @since 4.0.0
@@ -32217,6 +32302,9 @@ module.exports = new Type('tag:yaml.org,2002:timestamp', {
      *
      * func(NaN);
      * // => false
+     *
+     * var matchesFunc = _.overSome([{ 'a': 1 }, { 'a': 2 }])
+     * var matchesPropertyFunc = _.overSome([['a', 1], ['a', 2]])
      */
     var overSome = createOver(arraySome);
 
@@ -34012,6 +34100,24 @@ var runtime = (function (exports) {
   var asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator";
   var toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
 
+  function define(obj, key, value) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+    return obj[key];
+  }
+  try {
+    // IE 8 has a broken Object.defineProperty that only works on DOM objects.
+    define({}, "");
+  } catch (err) {
+    define = function(obj, key, value) {
+      return obj[key] = value;
+    };
+  }
+
   function wrap(innerFn, outerFn, self, tryLocsList) {
     // If outerFn provided and outerFn.prototype is a Generator, then outerFn.prototype instanceof Generator.
     var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator;
@@ -34082,16 +34188,19 @@ var runtime = (function (exports) {
     Generator.prototype = Object.create(IteratorPrototype);
   GeneratorFunction.prototype = Gp.constructor = GeneratorFunctionPrototype;
   GeneratorFunctionPrototype.constructor = GeneratorFunction;
-  GeneratorFunctionPrototype[toStringTagSymbol] =
-    GeneratorFunction.displayName = "GeneratorFunction";
+  GeneratorFunction.displayName = define(
+    GeneratorFunctionPrototype,
+    toStringTagSymbol,
+    "GeneratorFunction"
+  );
 
   // Helper for defining the .next, .throw, and .return methods of the
   // Iterator interface in terms of a single ._invoke method.
   function defineIteratorMethods(prototype) {
     ["next", "throw", "return"].forEach(function(method) {
-      prototype[method] = function(arg) {
+      define(prototype, method, function(arg) {
         return this._invoke(method, arg);
-      };
+      });
     });
   }
 
@@ -34110,9 +34219,7 @@ var runtime = (function (exports) {
       Object.setPrototypeOf(genFun, GeneratorFunctionPrototype);
     } else {
       genFun.__proto__ = GeneratorFunctionPrototype;
-      if (!(toStringTagSymbol in genFun)) {
-        genFun[toStringTagSymbol] = "GeneratorFunction";
-      }
+      define(genFun, toStringTagSymbol, "GeneratorFunction");
     }
     genFun.prototype = Object.create(Gp);
     return genFun;
@@ -34382,7 +34489,7 @@ var runtime = (function (exports) {
   // unified ._invoke helper method.
   defineIteratorMethods(Gp);
 
-  Gp[toStringTagSymbol] = "Generator";
+  define(Gp, toStringTagSymbol, "Generator");
 
   // A Generator should always return itself as the iterator object when the
   // @@iterator function is called on it. Some browsers' implementations of the
@@ -43242,12 +43349,13 @@ var WordTag = /*#__PURE__*/function () {
    * @param {Boolean} top - True if this WordTag should be drawn above the
    *     parent Word, false if it should be drawn below
    */
-  function WordTag(val, word, config) {
+  function WordTag(tag, word, config) {
     var top = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
     var multiLayer = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
     var layerIndex = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 0;
     (0, _classCallCheck2["default"])(this, WordTag);
-    this.val = val;
+    this.tag = tag;
+    this.val = this.tag.val;
     this.word = word;
     this.config = config;
     this.top = top;
@@ -43441,6 +43549,7 @@ var WordTag = /*#__PURE__*/function () {
       this.editingRect.remove();
       this.editingRect = null;
       this.val = this.val.trim();
+      this.tag.val = this.val;
 
       if (!this.val) {
         this.remove();
@@ -43517,10 +43626,13 @@ var Word = /*#__PURE__*/function () {
    * @param {Number} idx - The index of this Word within the
    *     currently-parsed document
    */
-  function Word(text, idx) {
+  function Word(token) {
     (0, _classCallCheck2["default"])(this, Word);
+    var text = token.text,
+        idx = token.idx;
     this.text = text;
-    this.idx = idx; // Optional properties that may be set later
+    this.idx = idx;
+    this.token = token; // Optional properties that may be set later
     // -----------------------------------------
 
     this.eventIds = [];
@@ -43612,16 +43724,14 @@ var Word = /*#__PURE__*/function () {
 
       if (this.initialised) {
         var displayTag = category in this.registeredTags ? this.registeredTags[category] : "-";
-        var topTagKey = "".concat(category, "-").concat(displayTag);
+        var topTagKey = "".concat(category, "-").concat(displayTag.val);
 
         if (!(topTagKey in this.topTags)) {
           var currentDisplayedTags = Object.keys(this.topTags);
           this.topTags[topTagKey] = new _wordTag["default"](displayTag, this, this.config, true, true, currentDisplayedTags.length);
         } else {
           this.removeTopTagCategory(category);
-        } // Since one of the Word's tags has changed, recalculate/realign its
-        // bounding box
-
+        }
 
         this.alignBox();
       }
@@ -43629,16 +43739,17 @@ var Word = /*#__PURE__*/function () {
   }, {
     key: "removeTopTagCategory",
     value: function removeTopTagCategory(category) {
-      var _this = this;
-
       var displayTag = category in this.registeredTags ? this.registeredTags[category] : "-";
-      var topTagKey = "".concat(category, "-").concat(displayTag);
+      var topTagKey = "".concat(category, "-").concat(displayTag.val);
       var topTagKeys = Object.keys(this.topTags);
 
       if (topTagKeys.length > 1) {
-        topTagKeys.forEach(function (localTopTagKey) {
-          _this.topTags[localTopTagKey].remove();
-        });
+        var tag = this.topTags[topTagKey];
+
+        if (tag) {
+          tag.remove();
+        }
+
         delete this.topTags[topTagKey];
 
         this._redrawTopTags();
@@ -43649,24 +43760,34 @@ var Word = /*#__PURE__*/function () {
   }, {
     key: "_redrawTopTags",
     value: function _redrawTopTags() {
-      var _this2 = this;
+      var _this = this;
 
       var currentDisplayedTags = Object.keys(this.topTags);
       currentDisplayedTags.forEach(function (topTagKey, i) {
-        var currentWordTag = _this2.topTags[topTagKey];
-        _this2.bottomTags[topTagKey] = new _wordTag["default"](currentWordTag.val, _this2, _this2.config, true, true, i);
+        var currentWordTag = _this.topTags[topTagKey];
+
+        if (currentWordTag !== null) {
+          currentWordTag.layerIndex = i;
+          currentWordTag.draw();
+        }
       });
+      this.alignBox();
     }
   }, {
     key: "_redrawBottomTags",
     value: function _redrawBottomTags() {
-      var _this3 = this;
+      var _this2 = this;
 
       var currentDisplayedTags = Object.keys(this.bottomTags);
       currentDisplayedTags.forEach(function (bottomTagKey, i) {
-        var currentWordTag = _this3.bottomTags[bottomTagKey];
-        _this3.bottomTags[bottomTagKey] = new _wordTag["default"](currentWordTag.val, _this3, _this3.config, false, true, i);
+        var currentWordTag = _this2.bottomTags[bottomTagKey];
+
+        if (currentWordTag !== null) {
+          currentWordTag.layerIndex = i;
+          currentWordTag.draw();
+        }
       });
+      this.alignBox();
     }
     /**
      * Sets the bottom tag category for this Word, redrawing it if it is
@@ -43685,7 +43806,7 @@ var Word = /*#__PURE__*/function () {
 
       if (this.initialised) {
         var displayTag = category in this.registeredTags ? this.registeredTags[category] : "-";
-        var bottomTagKey = "".concat(category, "-").concat(displayTag);
+        var bottomTagKey = "".concat(category, "-").concat(displayTag.val);
 
         if (!(bottomTagKey in this.bottomTags)) {
           var currentDisplayedTags = Object.keys(this.bottomTags);
@@ -43702,16 +43823,17 @@ var Word = /*#__PURE__*/function () {
   }, {
     key: "removeBottomTagCategory",
     value: function removeBottomTagCategory(category) {
-      var _this4 = this;
-
       var displayTag = category in this.registeredTags ? this.registeredTags[category] : "-";
-      var bottomTagKey = "".concat(category, "-").concat(displayTag);
+      var bottomTagKey = "".concat(category, "-").concat(displayTag.val);
       var bottomTagKeys = Object.keys(this.bottomTags);
 
       if (bottomTagKeys.length > 1) {
-        bottomTagKeys.forEach(function (localBottomTagKey) {
-          _this4.bottomTags[localBottomTagKey].remove();
-        });
+        var tag = this.bottomTags[bottomTagKey];
+
+        if (tag) {
+          tag.remove();
+        }
+
         delete this.bottomTags[bottomTagKey];
 
         this._redrawBottomTags();
@@ -43730,7 +43852,7 @@ var Word = /*#__PURE__*/function () {
   }, {
     key: "init",
     value: function init(main) {
-      var _this5 = this;
+      var _this3 = this;
 
       this.main = main;
       this.config = main.config;
@@ -43759,6 +43881,9 @@ var Word = /*#__PURE__*/function () {
         if (displayTag) {
           this.topTags[displayTag] = new _wordTag["default"](displayTag, this, this.config, true, true, 0);
         }
+      } else {
+        var topTagKey = "empty";
+        this.topTags[topTagKey] = null;
       }
 
       if (this.bottomTagCategory) {
@@ -43768,7 +43893,7 @@ var Word = /*#__PURE__*/function () {
 
 
       this.clusters.forEach(function (cluster) {
-        cluster.init(_this5, main);
+        cluster.init(_this3, main);
       }); // Ensure that all the SVG elements for this Word and any WordTags are
       // well-positioned within the Word's bounding box, and set the cached
       // values this._textBbox and this._bbox
@@ -43787,7 +43912,7 @@ var Word = /*#__PURE__*/function () {
         var dx = e.detail.p.x - x;
         x = e.detail.p.x;
         mainSvg.fire("word-move", {
-          object: _this5,
+          object: _this3,
           x: dx
         });
 
@@ -43796,14 +43921,14 @@ var Word = /*#__PURE__*/function () {
         }
       }).on("dragend", function () {
         mainSvg.fire("word-move-end", {
-          object: _this5,
+          object: _this3,
           clicked: mousemove === false
         });
       }); // attach right click listener
 
       this.svgText.dblclick(function (e) {
         return mainSvg.fire("build-tree", {
-          object: _this5,
+          object: _this3,
           event: e
         });
       });
@@ -43811,7 +43936,7 @@ var Word = /*#__PURE__*/function () {
       this.svgText.node.oncontextmenu = function (e) {
         e.preventDefault();
         mainSvg.fire("word-right-click", {
-          object: _this5,
+          object: _this3,
           event: e
         });
       };
@@ -43825,10 +43950,10 @@ var Word = /*#__PURE__*/function () {
   }, {
     key: "redrawLinks",
     value: function redrawLinks() {
-      var _this6 = this;
+      var _this4 = this;
 
       this.links.forEach(function (l) {
-        return l.draw(_this6);
+        return l.draw(_this4);
       });
       this.redrawClusters();
     }
@@ -43839,10 +43964,10 @@ var Word = /*#__PURE__*/function () {
   }, {
     key: "redrawClusters",
     value: function redrawClusters() {
-      var _this7 = this;
+      var _this5 = this;
 
       this.clusters.forEach(function (cluster) {
-        if (cluster.endpoints.indexOf(_this7) > -1) {
+        if (cluster.endpoints.indexOf(_this5) > -1) {
           cluster.draw();
         }
       });
@@ -43882,7 +44007,7 @@ var Word = /*#__PURE__*/function () {
   }, {
     key: "alignBox",
     value: function alignBox() {
-      var _this8 = this;
+      var _this6 = this;
 
       // We begin by resetting the position of the Text elements of this Word
       // and any WordTags, so that consecutive calls to `.alignBox()` don't
@@ -43894,16 +44019,23 @@ var Word = /*#__PURE__*/function () {
       var currentBox = this.svgText.bbox();
       this.svgText.move(-currentBox.x, -currentBox.height);
       this._textBbox = this.svgText.bbox();
+      var currentDisplayedTopTags = Object.keys(this.topTags);
 
-      if (this.topTag) {
-        this.topTag.centre();
+      if (currentDisplayedTopTags.length > 0) {
+        currentDisplayedTopTags.forEach(function (displayedTag) {
+          var tag = _this6.topTags[displayedTag];
+
+          if (tag) {
+            tag.centre();
+          }
+        });
       }
 
       var currentDisplayedBottomTags = Object.keys(this.bottomTags);
 
       if (currentDisplayedBottomTags.length > 0) {
         currentDisplayedBottomTags.forEach(function (displayedTag) {
-          _this8.bottomTags[displayedTag].centre();
+          _this6.bottomTags[displayedTag].centre();
         });
       } // Generally, we will only need to move things around if the WordTags
       // are wider than the Word, which gives the Word's bounding box a
@@ -44385,7 +44517,8 @@ var Main = (0, _autobindDecorator["default"])(_class = /*#__PURE__*/function () 
     this.labelManager = new _labelmanager["default"](this.svg);
     this.taxonomyManager = new _taxonomy["default"](this.config); // Registered Parsers
 
-    this.parsers = parsers; // Tokens and links that are currently drawn on the visualisation
+    this.parsers = parsers;
+    this.parsedData = null; // Tokens and links that are currently drawn on the visualisation
 
     this.words = [];
     this.links = []; // Initialisation
@@ -44417,8 +44550,10 @@ var Main = (0, _autobindDecorator["default"])(_class = /*#__PURE__*/function () 
       }
 
       this.clear();
-      var parsedData = this.parsers[format].parse(dataObjects);
-      this.init(parsedData);
+      this.parsedData = this.parsers[format].parse(dataObjects);
+      this.parsedDataFormat = format;
+      this.svgListeners = {};
+      this.init();
       this.draw();
     }
     /**
@@ -44518,12 +44653,11 @@ var Main = (0, _autobindDecorator["default"])(_class = /*#__PURE__*/function () 
      * Prepares all the Rows/Words/Links.
      * Adds all Words/WordClusters to Rows in the visualisation, but does not draw
      * Links or colour the various Words/WordTags
-     * @param {Object} parsedData
      */
 
   }, {
     key: "init",
-    value: function init(parsedData) {
+    value: function init() {
       var _this = this;
 
       // Convert the parsed data into visualisation objects (by adding
@@ -44535,16 +44669,16 @@ var Main = (0, _autobindDecorator["default"])(_class = /*#__PURE__*/function () 
       // Records LongLabels to convert later.
       this.words = [];
       var longLabels = [];
-      parsedData.tokens.forEach(function (token) {
+      this.parsedData.tokens.forEach(function (token) {
         // Basic
-        var word = new _word["default"](token.text, token.idx);
+        var word = new _word["default"](token);
 
         _this.words.push(word);
 
         _lodash["default"].forOwn(token.registeredLabels, function (label, category) {
           if (_lodash["default"].has(label, "token")) {
             // Label
-            word.registerTag(category, label.val);
+            word.registerTag(category, label);
           } else if (_lodash["default"].has(label, "tokens")) {
             // LongLabel
             if (longLabels.indexOf(label) < 0) {
@@ -44573,7 +44707,7 @@ var Main = (0, _autobindDecorator["default"])(_class = /*#__PURE__*/function () 
 
       this.links = [];
       var linksById = {};
-      parsedData.links.forEach(function (link) {
+      this.parsedData.links.forEach(function (link) {
         var newTrigger = null;
         var newArgs = [];
 
@@ -45091,12 +45225,15 @@ var Main = (0, _autobindDecorator["default"])(_class = /*#__PURE__*/function () 
         _this3.labelManager.stopEditing();
 
         _this3.rowManager.resizeRow(event.detail.object.idx, event.detail.y);
-      }); // svg.on('label-updated', function(e) {
-      //   // TODO: so so incomplete
-      //   let color = tm.getColor(e.detail.label, e.detail.object);
-      //   e.detail.object.node.style.fill = color;
-      // });
+      });
+      this.svg.on("label-updated", function (e) {
+        _this3.svgListeners["label-updated"].forEach(function (listener) {
+          listener.call(_this3, _this3.parsedData);
+        }); // // TODO: so so incomplete
+        // let color = tm.getColor(e.detail.label, e.detail.object);
+        // e.detail.object.node.style.fill = color;
 
+      });
       this.svg.on("word-move-start", function () {
         _this3.links.forEach(function (link) {
           if (link.top && !_this3.config.showTopLinksOnMove || !link.top && !_this3.config.showBottomLinksOnMove) {
@@ -45176,6 +45313,15 @@ var Main = (0, _autobindDecorator["default"])(_class = /*#__PURE__*/function () 
         width: 1
       });
     }
+  }, {
+    key: "addSvgListener",
+    value: function addSvgListener(svgEvent, listener) {
+      if (svgEvent in this.svgListeners) {
+        this.svgListeners[svgEvent].push(listener);
+      } else {
+        this.svgListeners[svgEvent] = [listener];
+      }
+    }
   }]);
   return Main;
 }()) || _class;
@@ -45238,7 +45384,8 @@ module.exports = function () {
       if (text && !(activeObject instanceof _link["default"])) {
         _svg.fire("label-updated", {
           object: text,
-          label: text.text()
+          label: text.text(),
+          activeObject: activeObject
         });
       }
 
