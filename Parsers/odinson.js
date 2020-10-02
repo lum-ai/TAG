@@ -1,5 +1,6 @@
 import Token from "./components/Token";
 import Link from "./components/Link";
+import WordCluster from "./components/WordCluster";
 import LongLabel from "./components/LongLabel";
 
 /**
@@ -15,7 +16,8 @@ class OdinsonParser {
     /** @private */
     this.data = {
       tokens: [],
-      links: []
+      links: [],
+      clusters: []
     };
 
     /** @private */
@@ -56,7 +58,8 @@ class OdinsonParser {
   reset() {
     this.data = {
       tokens: [],
-      links: []
+      links: [],
+      clusters: []
     };
 
     this.parsedDocuments = {};
@@ -193,11 +196,15 @@ class OdinsonParser {
 
   _getLabelForTokens(tokens, captureTypeName) {
     if (tokens.length > 1) {
+      const wordCluster = new WordCluster(tokens, captureTypeName);
+      this.data.clusters.push(wordCluster);
+
       const longLabel = LongLabel.registerLongLabel(
         "default",
         captureTypeName,
         tokens
       );
+
 
       return longLabel;
     } else {

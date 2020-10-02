@@ -40,10 +40,14 @@ class Link {
 
     // Fill in references in this Link's trigger/argument Tokens
     if (this.trigger) {
-      this.trigger.links.push(this);
+      if (typeof this.trigger.links !== "undefined") {
+        this.trigger.links.push(this);
+      }
     }
     this.arguments.forEach((arg) => {
-      arg.anchor.links.push(this);
+      if (typeof arg.anchor.links !== "undefined") {
+        arg.anchor.links.push(this);
+      }
     });
   }
 }
