@@ -285,8 +285,6 @@ class OdinParser {
         }
       }
 
-      console.log(linkArgs);
-
       // Done; prepare the new Link
       const link = new Link(
         // eventId

@@ -1,8 +1,6 @@
 import Token from "./components/Token";
 import Link from "./components/Link";
-import WordCluster from "./components/WordCluster";
 import LongLabel from "./components/LongLabel";
-import Word from "./components/Word";
 
 /**
  * Odinson parser class
@@ -27,6 +25,9 @@ class OdinsonParser {
 
     /** @private */
     this.lastTokenIdx = -1;
+
+    /** @private */
+    this.longLabelIdx = -1;
   }
 
   /**
@@ -61,13 +62,13 @@ class OdinsonParser {
     this.data = {
       tokens: [],
       links: [],
-      clusters: [],
-      words: [],
     };
 
     this.parsedDocuments = {};
 
     this.lastTokenIdx = -1;
+
+    this.longLabelIdx = -1;
   }
 
   /**
@@ -127,39 +128,27 @@ class OdinsonParser {
         i + this.lastTokenIdx + 1
       );
 
-      const thisWord = new Word(
-        sentenceFields.word[i],
-        i + this.lastTokenIdx + 1
-      );
-
       if (sentenceFields.raw) {
         thisToken.registerLabel("raw", sentenceFields.raw[i]);
-        thisWord.registerTag("raw", sentenceFields.raw[i]);
       }
       if (sentenceFields.tag) {
         thisToken.registerLabel("POS", sentenceFields.tag[i]);
-        thisWord.registerTag("POS", sentenceFields.tag[i]);
       }
       if (sentenceFields.lemma) {
         thisToken.registerLabel("lemma", sentenceFields.lemma[i]);
-        thisWord.registerTag("lemma", sentenceFields.lemma[i]);
       }
       if (sentenceFields.entity) {
         thisToken.registerLabel("entity", sentenceFields.entity[i]);
-        thisWord.registerTag("entity", sentenceFields.entity[i]);
       }
       if (sentenceFields.norms) {
         thisToken.registerLabel("norm", sentenceFields.norms[i]);
-        thisWord.registerTag("norm", sentenceFields.norms[i]);
       }
       if (sentenceFields.chunk) {
         thisToken.registerLabel("chunk", sentenceFields.chunk[i]);
-        thisWord.registerTag("chunk", sentenceFields.chunk[i]);
       }
 
       thisSentence.push(thisToken);
       this.data.tokens.push(thisToken);
-      this.data.words.push(thisWord);
     }
 
     this.lastTokenIdx += sentence.numTokens;
@@ -211,15 +200,12 @@ class OdinsonParser {
 
   _getLabelForTokens(tokens, captureTypeName) {
     if (tokens.length > 1) {
-      const wordCluster = new WordCluster(tokens, captureTypeName);
-      this.data.clusters.push(wordCluster);
-
       const longLabel = LongLabel.registerLongLabel(
         "default",
         captureTypeName,
-        tokens
+        tokens,
+        ++this.longLabelIdx
       );
-
 
       return longLabel;
     } else {
@@ -250,12 +236,10 @@ class OdinsonParser {
 
         const tokenLabel = this._getLabelForTokens(tokens, captureTypeName);
 
-        if (tokens.length === 1) {
-          linkArgs.push({
-            anchor: tokenLabel,
-            type: captureTypeName
-          });
-        }
+        linkArgs.push({
+          anchor: tokenLabel,
+          type: captureTypeName
+        });
       });
     });
 
