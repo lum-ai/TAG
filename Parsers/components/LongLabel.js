@@ -21,6 +21,7 @@ class LongLabel {
     this.val = val;
     this.tokens = tokens;
     this.idx = idx;
+    this.links = [];
   }
 
   /**
