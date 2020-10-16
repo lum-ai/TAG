@@ -220,7 +220,7 @@ class OdinsonParser {
     const linkArgs = [];
 
     const spanTokens = this.data.tokens.slice(span.start, span.end);
-    const trigger = this._getLabelForTokens(spanTokens, relType);
+    const trigger = this._getLabelForTokens(spanTokens, "trigger");
 
     captures.forEach((capture) => {
       const captureTypeNames = Object.keys(capture);
