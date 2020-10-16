@@ -46150,6 +46150,8 @@ var TaxonomyManager = /*#__PURE__*/function () {
   }], [{
     key: "setColour",
     value: function setColour(element, colour) {
+      console.log(element);
+
       if (element instanceof _word["default"]) {
         // Set the colour of the tag
         element.topTag.svgText.node.style.fill = colour;
