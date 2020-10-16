@@ -131,6 +131,7 @@ class TaxonomyManager {
    * @param colour
    */
   static setColour(element, colour) {
+    console.log(element);
     if (element instanceof Word) {
       // Set the colour of the tag
       element.topTag.svgText.node.style.fill = colour;
