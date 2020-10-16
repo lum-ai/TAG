@@ -15,11 +15,13 @@ class LongLabel {
    * @param {String} val - The raw text for the Label
    * @param {Token[]} tokens - The parent Tokens for the LongLabel
    */
-  constructor(val, tokens) {
+  constructor(val, tokens, idx) {
     this.type = "LongLabel";
 
     this.val = val;
     this.tokens = tokens;
+    this.idx = idx;
+    this.links = [];
   }
 
   /**
@@ -28,8 +30,8 @@ class LongLabel {
    * @param {String} val - The raw text for the Label
    * @param {Token[]} tokens - The parent Tokens for the LongLabel
    */
-  static registerLongLabel(category, val, tokens) {
-    const longLabel = new LongLabel(val, tokens);
+  static registerLongLabel(category, val, tokens, idx) {
+    const longLabel = new LongLabel(val, tokens, idx);
     tokens.forEach((token) => {
       token.registerLongLabel(category, longLabel);
     });

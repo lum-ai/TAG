@@ -1,0 +1,412 @@
+{
+    "numTokens": 28,
+    "fields": [
+        {
+            "$type": "ai.lum.odinson.TokensField",
+            "name": "raw",
+            "tokens": [
+                "Kapulnik",
+                "et",
+                "al",
+                "[",
+                "32",
+                "]",
+                "found",
+                "that",
+                "SLs",
+                "promoted",
+                "root",
+                "hair",
+                "elongation",
+                "through",
+                "a",
+                "common",
+                "regulatory",
+                "pathway",
+                ",",
+                "which",
+                "is",
+                "produced",
+                "coordinately",
+                "with",
+                "ethylene",
+                "in",
+                "Arabidopsis",
+                "."
+            ],
+            "store": true
+        },
+        {
+            "$type": "ai.lum.odinson.TokensField",
+            "name": "word",
+            "tokens": [
+                "Kapulnik",
+                "et",
+                "al",
+                "[",
+                "32",
+                "]",
+                "found",
+                "that",
+                "SLs",
+                "promoted",
+                "root",
+                "hair",
+                "elongation",
+                "through",
+                "a",
+                "common",
+                "regulatory",
+                "pathway",
+                ",",
+                "which",
+                "is",
+                "produced",
+                "coordinately",
+                "with",
+                "ethylene",
+                "in",
+                "Arabidopsis",
+                "."
+            ]
+        },
+        {
+            "$type": "ai.lum.odinson.TokensField",
+            "name": "tag",
+            "tokens": [
+                "NNP",
+                "FW",
+                "FW",
+                "-LRB-",
+                "CD",
+                "-RRB-",
+                "VBD",
+                "IN",
+                "NNP",
+                "VBD",
+                "NN",
+                "NN",
+                "NN",
+                "IN",
+                "DT",
+                "JJ",
+                "JJ",
+                "NN",
+                ",",
+                "WDT",
+                "VBZ",
+                "VBN",
+                "RB",
+                "IN",
+                "NN",
+                "IN",
+                "NNP",
+                "."
+            ]
+        },
+        {
+            "$type": "ai.lum.odinson.TokensField",
+            "name": "lemma",
+            "tokens": [
+                "Kapulnik",
+                "et",
+                "al",
+                "[",
+                "32",
+                "]",
+                "find",
+                "that",
+                "SLs",
+                "promote",
+                "root",
+                "hair",
+                "elongation",
+                "through",
+                "a",
+                "common",
+                "regulatory",
+                "pathway",
+                ",",
+                "which",
+                "be",
+                "produce",
+                "coordinately",
+                "with",
+                "ethylene",
+                "in",
+                "Arabidopsis",
+                "."
+            ]
+        },
+        {
+            "$type": "ai.lum.odinson.TokensField",
+            "name": "entity",
+            "tokens": [
+                "O",
+                "O",
+                "O",
+                "O",
+                "O",
+                "O",
+                "O",
+                "O",
+                "B-Gene_or_gene_product",
+                "O",
+                "B-BioProcess",
+                "I-BioProcess",
+                "I-BioProcess",
+                "O",
+                "O",
+                "O",
+                "O",
+                "O",
+                "O",
+                "O",
+                "O",
+                "O",
+                "O",
+                "O",
+                "O",
+                "O",
+                "O",
+                "O"
+            ]
+        },
+        {
+            "$type": "ai.lum.odinson.TokensField",
+            "name": "chunk",
+            "tokens": [
+                "B-NP",
+                "I-NP",
+                "I-NP",
+                "I-NP",
+                "I-NP",
+                "I-NP",
+                "B-VP",
+                "B-SBAR",
+                "B-NP",
+                "B-VP",
+                "B-NP",
+                "I-NP",
+                "I-NP",
+                "B-PP",
+                "B-NP",
+                "I-NP",
+                "I-NP",
+                "I-NP",
+                "O",
+                "B-NP",
+                "B-VP",
+                "I-VP",
+                "B-ADVP",
+                "B-PP",
+                "B-NP",
+                "B-PP",
+                "B-NP",
+                "O"
+            ]
+        },
+        {
+            "$type": "ai.lum.odinson.GraphField",
+            "name": "dependencies",
+            "edges": [
+                [
+                    12,
+                    11,
+                    "compound"
+                ],
+                [
+                    0,
+                    2,
+                    "dep"
+                ],
+                [
+                    21,
+                    20,
+                    "auxpass"
+                ],
+                [
+                    17,
+                    19,
+                    "ref"
+                ],
+                [
+                    21,
+                    24,
+                    "nmod_with"
+                ],
+                [
+                    17,
+                    16,
+                    "amod"
+                ],
+                [
+                    9,
+                    8,
+                    "nsubj"
+                ],
+                [
+                    9,
+                    7,
+                    "mark"
+                ],
+                [
+                    9,
+                    12,
+                    "dobj"
+                ],
+                [
+                    17,
+                    15,
+                    "amod"
+                ],
+                [
+                    0,
+                    1,
+                    "compound"
+                ],
+                [
+                    0,
+                    4,
+                    "amod"
+                ],
+                [
+                    12,
+                    10,
+                    "compound"
+                ],
+                [
+                    9,
+                    17,
+                    "nmod_through"
+                ],
+                [
+                    17,
+                    21,
+                    "acl:relcl"
+                ],
+                [
+                    26,
+                    25,
+                    "case"
+                ],
+                [
+                    24,
+                    26,
+                    "nmod_in"
+                ],
+                [
+                    6,
+                    0,
+                    "nsubj"
+                ],
+                [
+                    21,
+                    22,
+                    "advmod"
+                ],
+                [
+                    17,
+                    13,
+                    "case"
+                ],
+                [
+                    17,
+                    14,
+                    "det"
+                ],
+                [
+                    24,
+                    23,
+                    "case"
+                ],
+                [
+                    6,
+                    9,
+                    "ccomp"
+                ],
+                [
+                    21,
+                    17,
+                    "nsubjpass"
+                ]
+            ],
+            "roots": [
+                6
+            ]
+        }
+    ],
+    "sentenceId": 3413,
+    "label": "ArabidopsisEvent",
+    "documentId": "PMC5580556",
+    "sentenceIndex": 162,
+    "words": [
+        "Kapulnik",
+        "et",
+        "al",
+        "[",
+        "32",
+        "]",
+        "found",
+        "that",
+        "SLs",
+        "promoted",
+        "root",
+        "hair",
+        "elongation",
+        "through",
+        "a",
+        "common",
+        "regulatory",
+        "pathway",
+        ",",
+        "which",
+        "is",
+        "produced",
+        "coordinately",
+        "with",
+        "ethylene",
+        "in",
+        "Arabidopsis",
+        "."
+    ],
+    "foundBy": "bioprocess-example",
+    "match": [
+        {
+            "span": {
+                "start": 9,
+                "end": 10
+            },
+            "captures": [
+                {
+                    "subject": {
+                        "span": {
+                            "start": 8,
+                            "end": 9
+                        },
+                        "captures": []
+                    }
+                },
+                {
+                    "context": {
+                        "span": {
+                            "start": 26,
+                            "end": 27
+                        },
+                        "captures": []
+                    }
+                },
+                {
+                    "object": {
+                        "span": {
+                            "start": 10,
+                            "end": 13
+                        },
+                        "captures": []
+                    }
+                }
+            ]
+        }
+    ],
+    "id": 0
+}

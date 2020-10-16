@@ -63,6 +63,7 @@ class Main {
     // Tokens and links that are currently drawn on the visualisation
     this.words = [];
     this.links = [];
+    this.wordClusters = [];
 
     // Initialisation
     this.resize();
@@ -157,6 +158,7 @@ class Main {
     // Labels -> WordTags
     // Records LongLabels to convert later.
     this.words = [];
+    this.wordClusters = [];
     const longLabels = [];
     this.parsedData.tokens.forEach((token) => {
       // Basic
@@ -186,7 +188,7 @@ class Main {
         const wordIdx = longLabel.tokens[x].idx;
         labelWords.push(this.words[wordIdx]);
       }
-      new WordCluster(labelWords, longLabel.val);
+      this.wordClusters.push(new WordCluster(labelWords, longLabel.val));
     });
 
     // Links
@@ -214,6 +216,11 @@ class Main {
         } else if (arg.anchor.type === "Link") {
           newArgs.push({
             anchor: linksById[arg.anchor.eventId],
+            type: arg.type
+          });
+        } else if (arg.anchor.type === "LongLabel") {
+          newArgs.push({
+            anchor: this.wordClusters[arg.anchor.idx],
             type: arg.type
           });
         }
