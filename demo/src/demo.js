@@ -224,13 +224,13 @@ $(async () => {
       uiTag.setBottomLinkCategory($optionBottomLinks.val());
     });
 
-    const currentTopTags = uiTag.getOption("topTagCategory");
+    const currentTopTags = uiTag.getOption("topTagCategories");
     const topTagsContainer = $("#top-tags-container");
     topTagsContainer.html("");
 
     for (const category of uiTag.getTagCategories()) {
-      const checked = category === currentTopTags ? "checked" : "";
-      const optionContainer = $('<div class="custom-control custom-checkbox">');
+      const checked = currentTopTags.indexOf(category) >= 0 ? "checked" : "";
+      const optionContainer = $("<div class=\"custom-control custom-checkbox\">");
       const optionLabel = $(
         `<label class="custom-control-label" for="tag-option-top-tag-${category}">`
       ).html(category);
@@ -239,7 +239,14 @@ $(async () => {
       ).attr("value", category);
 
       option.off("change").on("change", () => {
-        uiTag.setTopTagCategory(option.val());
+        const $this = $(this);
+
+        if ($this.checked) {
+          uiTag.removeTopTagCategory(option.val());
+        }
+        else {
+          uiTag.setTopTagCategory(option.val());
+        }
       });
 
       optionContainer.append(option);
@@ -248,25 +255,29 @@ $(async () => {
       topTagsContainer.append(optionContainer);
     }
 
-    const currentBottomTags = uiTag.getOption("bottomTagCategory");
+    const currentBottomTags = uiTag.getOption("bottomTagCategories");
     const bottomTagsContainer = $("#bottom-tags-container");
     bottomTagsContainer.html("");
 
     for (const category of uiTag.getTagCategories()) {
-      if (category === currentBottomTags) {
-        continue;
-      }
-
-      const optionContainer = $('<div class="custom-control custom-checkbox">');
+      const checked = currentBottomTags.indexOf(category) >= 0 ? "checked" : "";
+      const optionContainer = $("<div class=\"custom-control custom-checkbox\">");
       const optionLabel = $(
         `<label class="custom-control-label" for="tag-option-bottom-tag-${category}">`
       ).html(category);
       const option = $(
-        `<input type="checkbox" class="custom-control-input" id="tag-option-bottom-tag-${category}">`
+        `<input type="checkbox" class="custom-control-input" id="tag-option-bottom-tag-${category}"  ${checked}>`
       ).attr("value", category);
 
       option.off("change").on("change", () => {
-        uiTag.setTopTagCategory(option.val());
+        const $this = $(this);
+
+        if ($this.checked) {
+          uiTag.removeBottomTagCategory(option.val());
+        }
+        else {
+          uiTag.setBottomTagCategory(option.val());
+        }
       });
 
       optionContainer.append(option);

@@ -136,8 +136,8 @@ class Word {
     this.eventIds = [];
 
     this.registeredTags = {};
-    this.topTagCategory = "";
-    this.bottomTagCategory = "";
+    this.topTagCategories = [];
+    this.bottomTagCategories = [];
 
     this.bottomTags = {};
     this.topTags = {};
@@ -220,30 +220,30 @@ class Word {
       return;
     }
 
-    this.topTagCategory = category;
+    if (this.topTagCategories.indexOf(category) >= 0) {
+      this.removeTopTagCategory(category);
+      return;
+    }
 
     if (this.initialised) {
       const displayTag = category in this.registeredTags ? this.registeredTags[category] : "-";
       const topTagKey = `${category}-${displayTag.val}`;
 
-      if (!(topTagKey in this.topTags)) {
-        const currentDisplayedTags = Object.keys(this.topTags);
+      this.topTags[topTagKey] = new WordTag(
+        displayTag,
+        this,
+        this.config,
+        true,
+        true,
+        this.bottomTagCategories.length
+      );
 
-        this.topTags[topTagKey] = new WordTag(
-          displayTag,
-          this,
-          this.config,
-          true,
-          true,
-          currentDisplayedTags.length
-        );
-      }
-      else {
-        this.removeTopTagCategory(category);
-      }
-
+      // Since one of the Word's tags has changed, recalculate/realign its
+      // bounding box
       this.alignBox();
     }
+
+    this.topTagCategories.push(category);
   }
 
   removeTopTagCategory(category) {
@@ -263,6 +263,8 @@ class Word {
       this._redrawTopTags();
 
       this.alignBox();
+
+      this.topTagCategories = this.topTagCategories.filter((topCategory) => topCategory !== category);
     }
   }
 
@@ -306,32 +308,30 @@ class Word {
       return;
     }
 
-    this.bottomTagCategory = category;
+    if (this.bottomTagCategories.indexOf(category) >= 0) {
+      this.removeBottomTagCategory(category);
+      return;
+    }
 
     if (this.initialised) {
       const displayTag = category in this.registeredTags ? this.registeredTags[category] : "-";
       const bottomTagKey = `${category}-${displayTag.val}`;
 
-      if (!(bottomTagKey in this.bottomTags)) {
-        const currentDisplayedTags = Object.keys(this.bottomTags);
-
-        this.bottomTags[bottomTagKey] = new WordTag(
-          displayTag,
-          this,
-          this.config,
-          false,
-          true,
-          currentDisplayedTags.length
-        );
-      }
-      else {
-        this.removeBottomTagCategory(category);
-      }
+      this.bottomTags[bottomTagKey] = new WordTag(
+        displayTag,
+        this,
+        this.config,
+        false,
+        true,
+        this.bottomTagCategories.length
+      );
 
       // Since one of the Word's tags has changed, recalculate/realign its
       // bounding box
       this.alignBox();
     }
+
+    this.bottomTagCategories.push(category);
   }
 
   removeBottomTagCategory(category) {
@@ -352,6 +352,7 @@ class Word {
 
       this.alignBox();
 
+      this.bottomTagCategories = this.bottomTagCategories.filter((bottomCategory) => bottomCategory !== category);
     }
   }
 
@@ -396,19 +397,21 @@ class Word {
 
     // ------------------------
     // Draw in this Word's tags
-    if (this.topTagCategory) {
-      const displayTag = this.registeredTags[this.topTagCategory];
+    if (this.topTagCategories.length) {
+      this.topTagCategories.forEach((category, i) => {
+        const displayTag = category in this.registeredTags ? this.registeredTags[category] : "-";
+        const topTagKey = `${category}-${displayTag.val}`;
 
-      if (displayTag) {
-        this.topTags[displayTag] = new WordTag(
+
+        this.topTags[topTagKey] = new WordTag(
           displayTag,
           this,
           this.config,
           true,
           true,
-          0
+          i
         );
-      }
+      });
     }
     else {
       const topTagKey = `empty`;
@@ -416,17 +419,20 @@ class Word {
     }
 
 
-    if (this.bottomTagCategory) {
-      const displayTag = this.registeredTags[this.bottomTagCategory];
+    if (this.bottomTagCategories.length) {
+      this.bottomTagCategories.forEach((category, i) => {
+        const displayTag = category in this.registeredTags ? this.registeredTags[category] : "-";
+        const bottomTagKey = `${category}-${displayTag.val}`;
 
-      this.bottomTags[displayTag] = new WordTag(
-        displayTag,
-        this,
-        this.config,
-        false,
-        true,
-        0
-      );
+        this.bottomTags[bottomTagKey] = new WordTag(
+          displayTag,
+          this,
+          this.config,
+          false,
+          true,
+          i
+        );
+      });
     }
 
     // Draw cluster info

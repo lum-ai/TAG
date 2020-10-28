@@ -43676,8 +43676,8 @@ var Word = /*#__PURE__*/function () {
 
     this.eventIds = [];
     this.registeredTags = {};
-    this.topTagCategory = "";
-    this.bottomTagCategory = "";
+    this.topTagCategories = [];
+    this.bottomTagCategories = [];
     this.bottomTags = {};
     this.topTags = {}; // Back-references that will be set when this Word is used in
     // other structures
@@ -43759,21 +43759,21 @@ var Word = /*#__PURE__*/function () {
         return;
       }
 
-      this.topTagCategory = category;
+      if (this.topTagCategories.indexOf(category) >= 0) {
+        this.removeTopTagCategory(category);
+        return;
+      }
 
       if (this.initialised) {
         var displayTag = category in this.registeredTags ? this.registeredTags[category] : "-";
         var topTagKey = "".concat(category, "-").concat(displayTag.val);
-
-        if (!(topTagKey in this.topTags)) {
-          var currentDisplayedTags = Object.keys(this.topTags);
-          this.topTags[topTagKey] = new _wordTag["default"](displayTag, this, this.config, true, true, currentDisplayedTags.length);
-        } else {
-          this.removeTopTagCategory(category);
-        }
+        this.topTags[topTagKey] = new _wordTag["default"](displayTag, this, this.config, true, true, this.bottomTagCategories.length); // Since one of the Word's tags has changed, recalculate/realign its
+        // bounding box
 
         this.alignBox();
       }
+
+      this.topTagCategories.push(category);
     }
   }, {
     key: "removeTopTagCategory",
@@ -43794,6 +43794,9 @@ var Word = /*#__PURE__*/function () {
         this._redrawTopTags();
 
         this.alignBox();
+        this.topTagCategories = this.topTagCategories.filter(function (topCategory) {
+          return topCategory !== category;
+        });
       }
     }
   }, {
@@ -43841,23 +43844,21 @@ var Word = /*#__PURE__*/function () {
         return;
       }
 
-      this.bottomTagCategory = category;
+      if (this.bottomTagCategories.indexOf(category) >= 0) {
+        this.removeBottomTagCategory(category);
+        return;
+      }
 
       if (this.initialised) {
         var displayTag = category in this.registeredTags ? this.registeredTags[category] : "-";
         var bottomTagKey = "".concat(category, "-").concat(displayTag.val);
-
-        if (!(bottomTagKey in this.bottomTags)) {
-          var currentDisplayedTags = Object.keys(this.bottomTags);
-          this.bottomTags[bottomTagKey] = new _wordTag["default"](displayTag, this, this.config, false, true, currentDisplayedTags.length);
-        } else {
-          this.removeBottomTagCategory(category);
-        } // Since one of the Word's tags has changed, recalculate/realign its
+        this.bottomTags[bottomTagKey] = new _wordTag["default"](displayTag, this, this.config, false, true, this.bottomTagCategories.length); // Since one of the Word's tags has changed, recalculate/realign its
         // bounding box
-
 
         this.alignBox();
       }
+
+      this.bottomTagCategories.push(category);
     }
   }, {
     key: "removeBottomTagCategory",
@@ -43878,6 +43879,9 @@ var Word = /*#__PURE__*/function () {
         this._redrawBottomTags();
 
         this.alignBox();
+        this.bottomTagCategories = this.bottomTagCategories.filter(function (bottomCategory) {
+          return bottomCategory !== category;
+        });
       }
     }
     /**
@@ -43914,20 +43918,23 @@ var Word = /*#__PURE__*/function () {
       this._textBbox = this.svgText.bbox(); // ------------------------
       // Draw in this Word's tags
 
-      if (this.topTagCategory) {
-        var displayTag = this.registeredTags[this.topTagCategory];
-
-        if (displayTag) {
-          this.topTags[displayTag] = new _wordTag["default"](displayTag, this, this.config, true, true, 0);
-        }
+      if (this.topTagCategories.length) {
+        this.topTagCategories.forEach(function (category, i) {
+          var displayTag = category in _this3.registeredTags ? _this3.registeredTags[category] : "-";
+          var topTagKey = "".concat(category, "-").concat(displayTag.val);
+          _this3.topTags[topTagKey] = new _wordTag["default"](displayTag, _this3, _this3.config, true, true, i);
+        });
       } else {
         var topTagKey = "empty";
         this.topTags[topTagKey] = null;
       }
 
-      if (this.bottomTagCategory) {
-        var _displayTag = this.registeredTags[this.bottomTagCategory];
-        this.bottomTags[_displayTag] = new _wordTag["default"](_displayTag, this, this.config, false, true, 0);
+      if (this.bottomTagCategories.length) {
+        this.bottomTagCategories.forEach(function (category, i) {
+          var displayTag = category in _this3.registeredTags ? _this3.registeredTags[category] : "-";
+          var bottomTagKey = "".concat(category, "-").concat(displayTag.val);
+          _this3.bottomTags[bottomTagKey] = new _wordTag["default"](displayTag, _this3, _this3.config, false, true, i);
+        });
       } // Draw cluster info
 
 
@@ -44417,8 +44424,8 @@ function Config() {
   this.topLinkCategory = "default";
   this.bottomLinkCategory = "none"; // Category of top/bottom tags to show
 
-  this.topTagCategory = "default";
-  this.bottomTagCategory = "POS"; // Lock Rows to minimum height?
+  this.topTagCategories = ["default"];
+  this.bottomTagCategories = ["POS"]; // Lock Rows to minimum height?
 
   this.compactRows = false; // Continue to display top/bottom Links when moving Words?
 
@@ -44802,8 +44809,14 @@ var Main = (0, _autobindDecorator["default"])(_class = /*#__PURE__*/function () 
         // If the tag categories to show for the Word are already set (via the
         // default config or user options), set them here so that the Word can
         // draw them directly on init
-        word.setTopTagCategory(_this.config.topTagCategory);
-        word.setBottomTagCategory(_this.config.bottomTagCategory);
+        _this.config.topTagCategories.forEach(function (category) {
+          word.setTopTagCategory(category);
+        });
+
+        _this.config.bottomTagCategories.forEach(function (category) {
+          word.setBottomTagCategory(category);
+        });
+
         word.init(_this);
 
         _this.rowManager.addWordToRow(word, _this.rowManager.lastRow);
@@ -45100,7 +45113,11 @@ var Main = (0, _autobindDecorator["default"])(_class = /*#__PURE__*/function () 
   }, {
     key: "setTopTagCategory",
     value: function setTopTagCategory(category) {
-      this.setOption("topTagCategory", category);
+      if (category in this.config.topTagCategories) {
+        return;
+      }
+
+      this.config.topTagCategories.push(category);
       this.words.forEach(function (word) {
         word.setTopTagCategory(category);
         word.passingLinks.forEach(function (link) {
@@ -45115,6 +45132,9 @@ var Main = (0, _autobindDecorator["default"])(_class = /*#__PURE__*/function () 
   }, {
     key: "removeTopTagCategory",
     value: function removeTopTagCategory(category) {
+      this.config.topTagCategories = this.config.topTagCategories.filter(function (topCategory) {
+        return topCategory !== category;
+      });
       this.words.forEach(function (word) {
         word.removeTopTagCategory(category);
         word.passingLinks.forEach(function (link) {
@@ -45134,7 +45154,11 @@ var Main = (0, _autobindDecorator["default"])(_class = /*#__PURE__*/function () 
   }, {
     key: "setBottomTagCategory",
     value: function setBottomTagCategory(category) {
-      this.setOption("bottomTagCategory", category);
+      if (category in this.config.bottomTagCategories) {
+        return;
+      }
+
+      this.config.bottomTagCategories.push(category);
       this.words.forEach(function (word) {
         word.setBottomTagCategory(category);
         word.passingLinks.forEach(function (link) {
@@ -45147,6 +45171,9 @@ var Main = (0, _autobindDecorator["default"])(_class = /*#__PURE__*/function () 
   }, {
     key: "removeBottomTagCategory",
     value: function removeBottomTagCategory(category) {
+      this.config.bottomTagCategories = this.config.bottomTagCategories.filter(function (bottomCategory) {
+        return bottomCategory !== category;
+      });
       this.words.forEach(function (word) {
         word.removeBottomTagCategory(category);
         word.passingLinks.forEach(function (link) {
@@ -46150,8 +46177,6 @@ var TaxonomyManager = /*#__PURE__*/function () {
   }], [{
     key: "setColour",
     value: function setColour(element, colour) {
-      console.log(element);
-
       if (element instanceof _word["default"]) {
         // Set the colour of the tag
         element.topTag.svgText.node.style.fill = colour;

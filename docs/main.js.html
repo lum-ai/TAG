@@ -359,8 +359,14 @@ class Main {
       // If the tag categories to show for the Word are already set (via the
       // default config or user options), set them here so that the Word can
       // draw them directly on init
-      word.setTopTagCategory(this.config.topTagCategory);
-      word.setBottomTagCategory(this.config.bottomTagCategory);
+      this.config.topTagCategories.forEach((category) => {
+        word.setTopTagCategory(category);
+      });
+
+      this.config.bottomTagCategories.forEach((category) => {
+        word.setBottomTagCategory(category);
+      });
+
       word.init(this);
       this.rowManager.addWordToRow(word, this.rowManager.lastRow);
     });
@@ -643,7 +649,12 @@ class Main {
    * @param category
    */
   setTopTagCategory(category) {
-    this.setOption("topTagCategory", category);
+    if (category in this.config.topTagCategories) {
+      return;
+    }
+
+    this.config.topTagCategories.push(category);
+
     this.words.forEach((word) => {
       word.setTopTagCategory(category);
       word.passingLinks.forEach((link) => link.draw());
@@ -657,6 +668,8 @@ class Main {
   }
 
   removeTopTagCategory(category) {
+    this.config.topTagCategories = this.config.topTagCategories.filter((topCategory) => topCategory !== category);
+
     this.words.forEach((word) => {
       word.removeTopTagCategory(category);
       word.passingLinks.forEach((link) => link.draw());
@@ -674,7 +687,12 @@ class Main {
    * @param category
    */
   setBottomTagCategory(category) {
-    this.setOption("bottomTagCategory", category);
+    if (category in this.config.bottomTagCategories) {
+      return;
+    }
+
+    this.config.bottomTagCategories.push(category);
+
     this.words.forEach((word) => {
       word.setBottomTagCategory(category);
       word.passingLinks.forEach((link) => link.draw());
@@ -685,6 +703,8 @@ class Main {
   }
 
   removeBottomTagCategory(category) {
+    this.config.bottomTagCategories = this.config.bottomTagCategories.filter((bottomCategory) => bottomCategory !== category);
+
     this.words.forEach((word) => {
       word.removeBottomTagCategory(category);
       word.passingLinks.forEach((link) => link.draw());
