@@ -230,7 +230,7 @@ $(async () => {
 
     for (const category of uiTag.getTagCategories()) {
       const checked = currentTopTags.indexOf(category) >= 0 ? "checked" : "";
-      const optionContainer = $("<div class=\"custom-control custom-checkbox\">");
+      const optionContainer = $('<div class="custom-control custom-checkbox">');
       const optionLabel = $(
         `<label class="custom-control-label" for="tag-option-top-tag-${category}">`
       ).html(category);
@@ -243,8 +243,7 @@ $(async () => {
 
         if ($this.checked) {
           uiTag.removeTopTagCategory(option.val());
-        }
-        else {
+        } else {
           uiTag.setTopTagCategory(option.val());
         }
       });
@@ -261,7 +260,7 @@ $(async () => {
 
     for (const category of uiTag.getTagCategories()) {
       const checked = currentBottomTags.indexOf(category) >= 0 ? "checked" : "";
-      const optionContainer = $("<div class=\"custom-control custom-checkbox\">");
+      const optionContainer = $('<div class="custom-control custom-checkbox">');
       const optionLabel = $(
         `<label class="custom-control-label" for="tag-option-bottom-tag-${category}">`
       ).html(category);
@@ -274,8 +273,7 @@ $(async () => {
 
         if ($this.checked) {
           uiTag.removeBottomTagCategory(option.val());
-        }
-        else {
+        } else {
           uiTag.setBottomTagCategory(option.val());
         }
       });

@@ -486,7 +486,7 @@ class Link {
           row.wordHeight -
           this.config.linkSlotInterval * this.slot
       : // Bottom Links have negative slot numbers
-      row.ry +
+        row.ry +
           row.rh +
           row.wordDescent -
           this.config.linkSlotInterval * this.slot;

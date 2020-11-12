@@ -668,7 +668,8 @@ var OdinParser = /*#__PURE__*/function () {
     // Old TextBoundMentions return their host Word/WordCluster
     // Old EventMentions/RelationMentions return their Link
 
-    this.parsedMentions = {}; // We record the index of the last Token from the previous sentence so
+    this.parsedMentions = {};
+    this.hiddenMentions = new Set(); // We record the index of the last Token from the previous sentence so
     // that we can generate each Word's global index (if not Token indices
     // will incorrectly restart from 0 for each new document/sentence)
 
@@ -683,12 +684,13 @@ var OdinParser = /*#__PURE__*/function () {
 
   (0, _createClass2["default"])(OdinParser, [{
     key: "parse",
-    value: function parse(dataObjects) {
+    value: function parse(dataObjects, hiddenMentions) {
       if (dataObjects.length > 1) {
         console.log("Warning: Odin parser received multiple data objects. Only the first" + " data object will be parsed.");
       }
 
-      var data = dataObjects[0]; // Clear out any old parse data
+      var data = dataObjects[0];
+      this.hiddenMentions = new Set(hiddenMentions); // Clear out any old parse data
 
       this.reset(); // At the top level, the data has two parts: `documents` and `mentions`.
       // - `documents` includes the tokens and dependency parses for each
@@ -926,6 +928,10 @@ var OdinParser = /*#__PURE__*/function () {
       if (mention.type === "TextBoundMention") {
         var tokens = this.parsedDocuments[mention.document].sentences[mention.sentence].slice(mention.tokenInterval.start, mention.tokenInterval.end);
         var label = mention.labels[0];
+
+        if (this.hiddenMentions.has(label)) {
+          return null;
+        }
 
         if (tokens.length === 1) {
           // Set the annotation Label for this Token
@@ -44568,7 +44574,10 @@ var Main = (0, _autobindDecorator["default"])(_class = /*#__PURE__*/function () 
 
     this.words = [];
     this.links = [];
-    this.wordClusters = []; // Initialisation
+    this.wordClusters = [];
+    this.mentions = new Set();
+    this.hiddenMentions = new Set();
+    this.dataObjects = null; // Initialisation
 
     this.resize();
 
@@ -44589,6 +44598,8 @@ var Main = (0, _autobindDecorator["default"])(_class = /*#__PURE__*/function () 
   (0, _createClass2["default"])(Main, [{
     key: "loadData",
     value: function loadData(dataObjects, format) {
+      var hiddenMentions = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+
       // 1) Remove any currently-loaded data
       // 2) Parse the new data
       // 3) Hand-off the parsed data to the SVG initialisation procedure
@@ -44597,8 +44608,53 @@ var Main = (0, _autobindDecorator["default"])(_class = /*#__PURE__*/function () 
       }
 
       this.clear();
-      this.parsedData = this.parsers[format].parse(dataObjects);
+      this.hiddenMentions = new Set(hiddenMentions);
+      this.dataObjects = dataObjects;
       this.parsedDataFormat = format;
+
+      this._parseData();
+
+      console.log(this.parsers[format]);
+      this.svgListeners = {};
+      this.init();
+      this.draw();
+    }
+  }, {
+    key: "_parseData",
+    value: function _parseData() {
+      var _this = this;
+
+      this.parsedData = this.parsers[this.parsedDataFormat].parse(this.dataObjects, this.hiddenMentions);
+
+      if (this.parsers[this.parsedDataFormat].parsedMentions) {
+        var mentionsArr = Object.keys(this.parsers[this.parsedDataFormat].parsedMentions).map(function (mention) {
+          return _this.parsers[_this.parsedDataFormat].parsedMentions[mention];
+        });
+        this.mentions = new Set(mentionsArr.filter(function (mention) {
+          return mention.type === "Link";
+        }).map(function (mention) {
+          return mention.relType;
+        }));
+      }
+    }
+  }, {
+    key: "toggleMention",
+    value: function toggleMention(mention) {
+      if (!this.mentions.has(mention)) {
+        return false;
+      }
+
+      if (this.hiddenMentions.has(mention)) {
+        this.hiddenMentions["delete"](mention);
+      } else {
+        this.hiddenMentions.add(mention);
+      }
+
+      this.clear();
+
+      this._parseData();
+
+      console.log(this.parsers[this.parsedDataFormat]);
       this.svgListeners = {};
       this.init();
       this.draw();
@@ -44615,19 +44671,22 @@ var Main = (0, _autobindDecorator["default"])(_class = /*#__PURE__*/function () 
     key: "loadUrlAsync",
     value: function () {
       var _loadUrlAsync = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(path, format) {
-        var data;
+        var hiddenMentions,
+            data,
+            _args = arguments;
         return _regenerator["default"].wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                _context.next = 2;
+                hiddenMentions = _args.length > 2 && _args[2] !== undefined ? _args[2] : [];
+                _context.next = 3;
                 return _jquery["default"].ajax(path);
 
-              case 2:
+              case 3:
                 data = _context.sent;
-                this.loadData([data], format);
+                this.loadData([data], format, hiddenMentions);
 
-              case 4:
+              case 5:
               case "end":
                 return _context.stop();
             }
@@ -44705,7 +44764,7 @@ var Main = (0, _autobindDecorator["default"])(_class = /*#__PURE__*/function () 
   }, {
     key: "init",
     value: function init() {
-      var _this = this;
+      var _this2 = this;
 
       // Convert the parsed data into visualisation objects (by adding
       // SVG/visualisation-related data and methods)
@@ -44721,7 +44780,7 @@ var Main = (0, _autobindDecorator["default"])(_class = /*#__PURE__*/function () 
         // Basic
         var word = new _word["default"](token);
 
-        _this.words.push(word);
+        _this2.words.push(word);
 
         _lodash["default"].forOwn(token.registeredLabels, function (label, category) {
           if (_lodash["default"].has(label, "token")) {
@@ -44744,10 +44803,10 @@ var Main = (0, _autobindDecorator["default"])(_class = /*#__PURE__*/function () 
 
         for (var x = 0; x < longLabel.tokens.length; x++) {
           var wordIdx = longLabel.tokens[x].idx;
-          labelWords.push(_this.words[wordIdx]);
+          labelWords.push(_this2.words[wordIdx]);
         }
 
-        _this.wordClusters.push(new _wordCluster["default"](labelWords, longLabel.val));
+        _this2.wordClusters.push(new _wordCluster["default"](labelWords, longLabel.val));
       }); // Links
       // Arguments might be Tokens or (Parser) Links; convert them to Words
       // and Links.
@@ -44761,14 +44820,14 @@ var Main = (0, _autobindDecorator["default"])(_class = /*#__PURE__*/function () 
 
         if (link.trigger) {
           // Assume the trigger is a Token
-          newTrigger = _this.words[link.trigger.idx];
+          newTrigger = _this2.words[link.trigger.idx];
         } // noinspection JSAnnotator
 
 
         link.arguments.forEach(function (arg) {
           if (arg.anchor.type === "Token") {
             newArgs.push({
-              anchor: _this.words[arg.anchor.idx],
+              anchor: _this2.words[arg.anchor.idx],
               type: arg.type
             });
           } else if (arg.anchor.type === "Link") {
@@ -44778,14 +44837,14 @@ var Main = (0, _autobindDecorator["default"])(_class = /*#__PURE__*/function () 
             });
           } else if (arg.anchor.type === "LongLabel") {
             newArgs.push({
-              anchor: _this.wordClusters[arg.anchor.idx],
+              anchor: _this2.wordClusters[arg.anchor.idx],
               type: arg.type
             });
           }
         });
         var newLink = new _link["default"](link.eventId, newTrigger, newArgs, link.relType, link.category === "default", link.category);
 
-        _this.links.push(newLink);
+        _this2.links.push(newLink);
 
         linksById[newLink.eventId] = newLink;
       }); // Calculate the Link slots (vertical intervals to separate
@@ -44796,7 +44855,7 @@ var Main = (0, _autobindDecorator["default"])(_class = /*#__PURE__*/function () 
 
       this.links = _util["default"].sortForSlotting(this.links);
       this.links.forEach(function (link) {
-        return link.calculateSlot(_this.words);
+        return link.calculateSlot(_this2.words);
       }); // Initialise the first Row; new ones will be added automatically as
       // Words are drawn onto the visualisation
 
@@ -44809,22 +44868,22 @@ var Main = (0, _autobindDecorator["default"])(_class = /*#__PURE__*/function () 
         // If the tag categories to show for the Word are already set (via the
         // default config or user options), set them here so that the Word can
         // draw them directly on init
-        _this.config.topTagCategories.forEach(function (category) {
+        _this2.config.topTagCategories.forEach(function (category) {
           word.setTopTagCategory(category);
         });
 
-        _this.config.bottomTagCategories.forEach(function (category) {
+        _this2.config.bottomTagCategories.forEach(function (category) {
           word.setBottomTagCategory(category);
         });
 
-        word.init(_this);
+        word.init(_this2);
 
-        _this.rowManager.addWordToRow(word, _this.rowManager.lastRow);
+        _this2.rowManager.addWordToRow(word, _this2.rowManager.lastRow);
       }); // We have to initialise all the Links before we draw any of them, to
       // account for nested Links etc.
 
       this.links.forEach(function (link) {
-        link.init(_this);
+        link.init(_this2);
       });
     }
     /**
@@ -44835,21 +44894,21 @@ var Main = (0, _autobindDecorator["default"])(_class = /*#__PURE__*/function () 
   }, {
     key: "draw",
     value: function draw() {
-      var _this2 = this;
+      var _this3 = this;
 
       // Draw in the currently toggled Links
       this.links.forEach(function (link) {
-        if (link.top && link.category === _this2.config.topLinkCategory || !link.top && link.category === _this2.config.bottomLinkCategory) {
+        if (link.top && link.category === _this3.config.topLinkCategory || !link.top && link.category === _this3.config.bottomLinkCategory) {
           link.show();
         }
 
-        if (link.top && _this2.config.showTopMainLabel || !link.top && _this2.config.showBottomMainLabel) {
+        if (link.top && _this3.config.showTopMainLabel || !link.top && _this3.config.showBottomMainLabel) {
           link.showMainLabel();
         } else {
           link.hideMainLabel();
         }
 
-        if (link.top && _this2.config.showTopArgLabels || !link.top && _this2.config.showBottomArgLabels) {
+        if (link.top && _this3.config.showTopArgLabels || !link.top && _this3.config.showBottomArgLabels) {
           link.showArgLabels();
         } else {
           link.hideArgLabels();
@@ -44859,7 +44918,7 @@ var Main = (0, _autobindDecorator["default"])(_class = /*#__PURE__*/function () 
       this.rowManager.resizeAll(); // And change the Row resize cursor if compact mode is on
 
       this.rowManager.rows.forEach(function (row) {
-        _this2.config.compactRows ? row.draggable.addClass("row-drag-compact") : row.draggable.removeClass("row-drag-compact");
+        _this3.config.compactRows ? row.draggable.addClass("row-drag-compact") : row.draggable.removeClass("row-drag-compact");
       }); // Change token colours based on the current taxonomy, if loaded
 
       this.taxonomyManager.colour(this.words);
@@ -45292,37 +45351,37 @@ var Main = (0, _autobindDecorator["default"])(_class = /*#__PURE__*/function () 
   }, {
     key: "_setupSVGListeners",
     value: function _setupSVGListeners() {
-      var _this3 = this;
+      var _this4 = this;
 
       this.svg.on("row-resize", function (event) {
-        _this3.labelManager.stopEditing();
+        _this4.labelManager.stopEditing();
 
-        _this3.rowManager.resizeRow(event.detail.object.idx, event.detail.y);
+        _this4.rowManager.resizeRow(event.detail.object.idx, event.detail.y);
       });
       this.svg.on("label-updated", function (e) {
-        _this3.svgListeners["label-updated"].forEach(function (listener) {
-          listener.call(_this3, _this3.parsedData);
+        _this4.svgListeners["label-updated"].forEach(function (listener) {
+          listener.call(_this4, _this4.parsedData);
         }); // // TODO: so so incomplete
         // let color = tm.getColor(e.detail.label, e.detail.object);
         // e.detail.object.node.style.fill = color;
 
       });
       this.svg.on("word-move-start", function () {
-        _this3.links.forEach(function (link) {
-          if (link.top && !_this3.config.showTopLinksOnMove || !link.top && !_this3.config.showBottomLinksOnMove) {
+        _this4.links.forEach(function (link) {
+          if (link.top && !_this4.config.showTopLinksOnMove || !link.top && !_this4.config.showBottomLinksOnMove) {
             link.hide();
           }
         });
       });
       this.svg.on("word-move", function (event) {
         // tooltip.clear();
-        _this3.labelManager.stopEditing();
+        _this4.labelManager.stopEditing();
 
-        _this3.rowManager.moveWordOnRow(event.detail.object, event.detail.x);
+        _this4.rowManager.moveWordOnRow(event.detail.object, event.detail.x);
       });
       this.svg.on("word-move-end", function () {
-        _this3.links.forEach(function (link) {
-          if (link.top && link.category === _this3.config.topLinkCategory || !link.top && link.category === _this3.config.bottomLinkCategory) {
+        _this4.links.forEach(function (link) {
+          if (link.top && link.category === _this4.config.topLinkCategory || !link.top && link.category === _this4.config.bottomLinkCategory) {
             link.show();
           }
         });
@@ -45363,11 +45422,11 @@ var Main = (0, _autobindDecorator["default"])(_class = /*#__PURE__*/function () 
   }, {
     key: "_setupUIListeners",
     value: function _setupUIListeners() {
-      var _this4 = this;
+      var _this5 = this;
 
       // Browser window resize
       (0, _jquery["default"])(window).on("resize", _lodash["default"].throttle(function () {
-        _this4.resize();
+        _this5.resize();
       }, 50));
     } // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     // Debug functions

@@ -23,6 +23,8 @@ class OdinParser {
     // Old EventMentions/RelationMentions return their Link
     this.parsedMentions = {};
 
+    this.hiddenMentions = new Set();
+
     // We record the index of the last Token from the previous sentence so
     // that we can generate each Word's global index (if not Token indices
     // will incorrectly restart from 0 for each new document/sentence)
@@ -34,7 +36,7 @@ class OdinParser {
    * @param {Array} dataObjects - Array of input data objects.  We expect
    *     there to be only one.
    */
-  parse(dataObjects) {
+  parse(dataObjects, hiddenMentions) {
     if (dataObjects.length > 1) {
       console.log(
         "Warning: Odin parser received multiple data objects. Only the first" +
@@ -43,6 +45,8 @@ class OdinParser {
     }
 
     const data = dataObjects[0];
+
+    this.hiddenMentions = new Set(hiddenMentions);
 
     // Clear out any old parse data
     this.reset();
@@ -243,6 +247,10 @@ class OdinParser {
         mention.sentence
       ].slice(mention.tokenInterval.start, mention.tokenInterval.end);
       const label = mention.labels[0];
+
+      if (this.hiddenMentions.has(label)) {
+        return null;
+      }
 
       if (tokens.length === 1) {
         // Set the annotation Label for this Token
