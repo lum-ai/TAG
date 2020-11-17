@@ -283,6 +283,31 @@ $(async () => {
 
       bottomTagsContainer.append(optionContainer);
     }
+
+    const currentMentions = uiTag.mentions;
+    const tagMentions = $("#tag-mentions-container");
+    tagMentions.html("");
+
+    for (const [mentionId, mentionText] of currentMentions.entries()) {
+      const optionContainer = $('<div class="custom-control custom-checkbox">');
+
+      const optionLabel = $(
+        `<label class="custom-control-label" for="tag-mention-${mentionId}">`
+      ).html(mentionText);
+
+      const option = $(
+        `<input type="checkbox" class="custom-control-input" id="tag-mention-${mentionId}" checked>`
+      ).attr("value", mentionId);
+
+      option.off("change").on("change", () => {
+        uiTag.toggleMention(option.val());
+      });
+
+      optionContainer.append(option);
+      optionContainer.append(optionLabel);
+
+      tagMentions.append(optionContainer);
+    }
   }
 
   refreshLinkAndTagCategories();
