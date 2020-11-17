@@ -65,8 +65,9 @@ class Main {
     this.links = [];
     this.wordClusters = [];
 
-    this.mentions = new Set();
+    this.mentions = new Map();
     this.hiddenMentions = new Set();
+    this.hiddenMentionsTree = {};
     this.dataObjects = null;
 
     // Initialisation
@@ -113,18 +114,30 @@ class Main {
       this.hiddenMentions
     );
 
-    if (this.parsers[this.parsedDataFormat].parsedMentions) {
-      const mentionsArr = Object.keys(
-        this.parsers[this.parsedDataFormat].parsedMentions
-      ).map(
-        (mention) => this.parsers[this.parsedDataFormat].parsedMentions[mention]
-      );
+    if (this.parsers[this.parsedDataFormat].availableMentions) {
+      this.mentions = this.parsers[this.parsedDataFormat].availableMentions;
+    }
+  }
 
-      this.mentions = new Set(
-        mentionsArr
-          .filter((mention) => mention.type === "Link")
-          .map((mention) => mention.relType)
-      );
+  _hideMention(mention, parent) {
+    if (this.parsers[this.parsedDataFormat].parsedMentions[mention]) {
+      this.hiddenMentions.add(mention);
+
+      this.hiddenMentionsTree[parent].push(mention);
+
+      const currentMention = this.parsers[this.parsedDataFormat].parsedMentions[
+        mention
+      ];
+
+      if (currentMention.links.length === 1) {
+        this._hideMention(currentMention.links[0].eventId, parent);
+      } else {
+        currentMention.links.forEach((link) => {
+          if (link.links.length > 0) {
+            this._hideMention(link.eventId, parent);
+          }
+        });
+      }
     }
   }
 
@@ -135,8 +148,15 @@ class Main {
 
     if (this.hiddenMentions.has(mention)) {
       this.hiddenMentions.delete(mention);
+
+      this.hiddenMentionsTree[mention].forEach((childMention) => {
+        this.hiddenMentions.delete(childMention);
+      });
+
+      delete this.hiddenMentionsTree[mention];
     } else {
-      this.hiddenMentions.add(mention);
+      this.hiddenMentionsTree[mention] = [];
+      this._hideMention(mention, mention);
     }
 
     this.clear();

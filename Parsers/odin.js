@@ -6,6 +6,7 @@
 import Token from "./components/Token";
 import Link from "./components/Link";
 import LongLabel from "./components/LongLabel";
+import { lab } from "d3";
 
 class OdinParser {
   constructor() {
@@ -24,6 +25,7 @@ class OdinParser {
     this.parsedMentions = {};
 
     this.hiddenMentions = new Set();
+    this.availableMentions = new Map();
 
     // We record the index of the last Token from the previous sentence so
     // that we can generate each Word's global index (if not Token indices
@@ -46,10 +48,10 @@ class OdinParser {
 
     const data = dataObjects[0];
 
-    this.hiddenMentions = new Set(hiddenMentions);
-
     // Clear out any old parse data
     this.reset();
+
+    this.hiddenMentions = new Set(hiddenMentions);
 
     // At the top level, the data has two parts: `documents` and `mentions`.
     // - `documents` includes the tokens and dependency parses for each
@@ -71,6 +73,11 @@ class OdinParser {
     // There are a number of different types of mentions types:
     // - TextBoundMention
     // - EventMention
+
+    data.mentions.forEach((mention) => {
+      this.availableMentions.set(mention.id, mention.text);
+    });
+
     for (const mention of data.mentions) {
       this._parseMention(mention);
     }
@@ -92,6 +99,9 @@ class OdinParser {
     this.parsedDocuments = {};
     this.parsedMentions = {};
     this.lastTokenIdx = -1;
+
+    this.availableMentions = new Map();
+    this.hiddenMentions = new Set();
   }
 
   /**
@@ -235,6 +245,10 @@ class OdinParser {
      * @property {Object} mention.arguments
      */
 
+    if (this.hiddenMentions.has(mention.id)) {
+      return null;
+    }
+
     // Have we seen this one before?
     if (this.parsedMentions[mention.id]) {
       return this.parsedMentions[mention.id];
@@ -247,10 +261,6 @@ class OdinParser {
         mention.sentence
       ].slice(mention.tokenInterval.start, mention.tokenInterval.end);
       const label = mention.labels[0];
-
-      if (this.hiddenMentions.has(label)) {
-        return null;
-      }
 
       if (tokens.length === 1) {
         // Set the annotation Label for this Token
