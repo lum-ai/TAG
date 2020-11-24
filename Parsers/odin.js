@@ -6,7 +6,6 @@
 import Token from "./components/Token";
 import Link from "./components/Link";
 import LongLabel from "./components/LongLabel";
-import { lab } from "d3";
 
 class OdinParser {
   constructor() {
@@ -296,10 +295,13 @@ class OdinParser {
         for (const arg of args) {
           // Ensure that the argument mention has been parsed before
           const anchor = this._parseMention(arg);
-          linkArgs.push({
-            anchor,
-            type
-          });
+
+          if (anchor) {
+            linkArgs.push({
+              anchor,
+              type
+            });
+          }
         }
       }
 

@@ -243,12 +243,17 @@ class Link {
         draggedHandle = null;
       });
 
-    this.path.dblclick((e) =>
-      this.mainSvg.fire("build-tree", {
+    this.path.off("dblclick").dblclick((e) => {
+      // this.mainSvg.fire("build-tree", {
+      //   object: this,
+      //   event: e
+      // });
+
+      this.mainSvg.fire("link-dbl-click", {
         object: this,
         event: e
-      })
-    );
+      });
+    });
     this.path.node.oncontextmenu = (e) => {
       e.preventDefault();
       this.mainSvg.fire("link-right-click", {
@@ -1404,7 +1409,7 @@ class Label {
         event: e
       })
     );
-    this.svgText.dblclick((e) =>
+    this.svgText.off("dblclick").dblclick((e) =>
       this.mainSvg.fire("build-tree", {
         object: this.svgText,
         event: e

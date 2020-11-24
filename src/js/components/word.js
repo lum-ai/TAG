@@ -23,7 +23,7 @@ class Word {
    *     currently-parsed document
    */
   constructor(token) {
-    const {text, idx} = token;
+    const { text, idx } = token;
 
     this.text = text;
     this.idx = idx;
@@ -125,7 +125,8 @@ class Word {
     }
 
     if (this.initialised) {
-      const displayTag = category in this.registeredTags ? this.registeredTags[category] : "-";
+      const displayTag =
+        category in this.registeredTags ? this.registeredTags[category] : "-";
       const topTagKey = `${category}-${displayTag.val}`;
 
       this.topTags[topTagKey] = new WordTag(
@@ -146,7 +147,8 @@ class Word {
   }
 
   removeTopTagCategory(category) {
-    const displayTag = category in this.registeredTags ? this.registeredTags[category] : "-";
+    const displayTag =
+      category in this.registeredTags ? this.registeredTags[category] : "-";
     const topTagKey = `${category}-${displayTag.val}`;
     const topTagKeys = Object.keys(this.topTags);
 
@@ -163,7 +165,9 @@ class Word {
 
       this.alignBox();
 
-      this.topTagCategories = this.topTagCategories.filter((topCategory) => topCategory !== category);
+      this.topTagCategories = this.topTagCategories.filter(
+        (topCategory) => topCategory !== category
+      );
     }
   }
 
@@ -213,7 +217,8 @@ class Word {
     }
 
     if (this.initialised) {
-      const displayTag = category in this.registeredTags ? this.registeredTags[category] : "-";
+      const displayTag =
+        category in this.registeredTags ? this.registeredTags[category] : "-";
       const bottomTagKey = `${category}-${displayTag.val}`;
 
       this.bottomTags[bottomTagKey] = new WordTag(
@@ -234,7 +239,8 @@ class Word {
   }
 
   removeBottomTagCategory(category) {
-    const displayTag = category in this.registeredTags ? this.registeredTags[category] : "-";
+    const displayTag =
+      category in this.registeredTags ? this.registeredTags[category] : "-";
     const bottomTagKey = `${category}-${displayTag.val}`;
     const bottomTagKeys = Object.keys(this.bottomTags);
 
@@ -251,7 +257,9 @@ class Word {
 
       this.alignBox();
 
-      this.bottomTagCategories = this.bottomTagCategories.filter((bottomCategory) => bottomCategory !== category);
+      this.bottomTagCategories = this.bottomTagCategories.filter(
+        (bottomCategory) => bottomCategory !== category
+      );
     }
   }
 
@@ -298,9 +306,9 @@ class Word {
     // Draw in this Word's tags
     if (this.topTagCategories.length) {
       this.topTagCategories.forEach((category, i) => {
-        const displayTag = category in this.registeredTags ? this.registeredTags[category] : "-";
+        const displayTag =
+          category in this.registeredTags ? this.registeredTags[category] : "-";
         const topTagKey = `${category}-${displayTag.val}`;
-
 
         this.topTags[topTagKey] = new WordTag(
           displayTag,
@@ -311,16 +319,15 @@ class Word {
           i
         );
       });
-    }
-    else {
+    } else {
       const topTagKey = `empty`;
       this.topTags[topTagKey] = null;
     }
 
-
     if (this.bottomTagCategories.length) {
       this.bottomTagCategories.forEach((category, i) => {
-        const displayTag = category in this.registeredTags ? this.registeredTags[category] : "-";
+        const displayTag =
+          category in this.registeredTags ? this.registeredTags[category] : "-";
         const bottomTagKey = `${category}-${displayTag.val}`;
 
         this.bottomTags[bottomTagKey] = new WordTag(
@@ -371,7 +378,7 @@ class Word {
         });
       });
     // attach right click listener
-    this.svgText.dblclick((e) =>
+    this.svgText.off("dblclick").dblclick((e) =>
       mainSvg.fire("build-tree", {
         object: this,
         event: e

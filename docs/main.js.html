@@ -223,22 +223,21 @@ class Main {
   _hideMention(mention, parent) {
     if (this.parsers[this.parsedDataFormat].parsedMentions[mention]) {
       this.hiddenMentions.add(mention);
-
       this.hiddenMentionsTree[parent].push(mention);
 
-      const currentMention = this.parsers[this.parsedDataFormat].parsedMentions[
-        mention
-      ];
+      // const currentMention = this.parsers[this.parsedDataFormat].parsedMentions[
+      //   mention
+      // ];
 
-      if (currentMention.links.length === 1) {
-        this._hideMention(currentMention.links[0].eventId, parent);
-      } else {
-        currentMention.links.forEach((link) => {
-          if (link.links.length > 0) {
-            this._hideMention(link.eventId, parent);
-          }
-        });
-      }
+      // if (currentMention.links.length === 1) {
+      //   this._hideMention(currentMention.links[0].eventId, parent);
+      // } else {
+      //   currentMention.links.forEach((link) => {
+      //     if (link.links.length > 0 || link.arguments.length > 1) {
+      //       this._hideMention(link.eventId, parent);
+      //     }
+      //   });
+      // }
     }
   }
 
@@ -905,6 +904,15 @@ class Main {
           link.show();
         }
       });
+    });
+
+    this.svg.on("link-dbl-click", (evt) => {
+      const { eventId } = evt.detail.object;
+
+      this.toggleMention(eventId);
+
+      const mentionEvt = new Event("refresh-mentions");
+      window.dispatchEvent(mentionEvt);
     });
 
     // this.svg.on("tag-remove", (event) => {
