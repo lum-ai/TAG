@@ -123,20 +123,6 @@ class Main {
     if (this.parsers[this.parsedDataFormat].parsedMentions[mention]) {
       this.hiddenMentions.add(mention);
       this.hiddenMentionsTree[parent].push(mention);
-
-      // const currentMention = this.parsers[this.parsedDataFormat].parsedMentions[
-      //   mention
-      // ];
-
-      // if (currentMention.links.length === 1) {
-      //   this._hideMention(currentMention.links[0].eventId, parent);
-      // } else {
-      //   currentMention.links.forEach((link) => {
-      //     if (link.links.length > 0 || link.arguments.length > 1) {
-      //       this._hideMention(link.eventId, parent);
-      //     }
-      //   });
-      // }
     }
   }
 

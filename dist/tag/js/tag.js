@@ -1070,6 +1070,9 @@ var OdinsonParser = /*#__PURE__*/function () {
     /** @private */
 
     this.longLabelIdx = -1;
+    this.parsedMentions = {};
+    this.hiddenMentions = new Set();
+    this.availableMentions = new Map();
   }
   /**
    * Main function which parses the sentence data. This works with both an
@@ -1084,11 +1087,13 @@ var OdinsonParser = /*#__PURE__*/function () {
 
   (0, _createClass2["default"])(OdinsonParser, [{
     key: "parse",
-    value: function parse(dataObject) {
+    value: function parse(dataObject, hiddenMentions) {
       var _this = this;
 
       this.reset();
+      this.hiddenMentions = new Set(hiddenMentions);
       var toParse = Array.isArray(dataObject) ? dataObject[0] : dataObject;
+      this.data.words = toParse.words;
       this.parsedDocuments[0] = this._parseSentence(toParse, Date.now());
       toParse.match.forEach(function (mention) {
         _this._parseMention({
@@ -1114,6 +1119,9 @@ var OdinsonParser = /*#__PURE__*/function () {
       this.parsedDocuments = {};
       this.lastTokenIdx = -1;
       this.longLabelIdx = -1;
+      this.hiddenMentions = new Set();
+      this.availableMentions = new Map();
+      this.parsedMentions = {};
     }
     /**
      * Method to parse and extract tokens and links from a single sentence.
@@ -1225,6 +1233,17 @@ var OdinsonParser = /*#__PURE__*/function () {
           relType = _ref.relType;
       var span = mention.span,
           captures = mention.captures;
+      var id = "".concat(relType, "-").concat(span.start, "-").concat(span.end);
+      this.availableMentions.set(id, this.data.words.slice(span.start, span.end).join(" "));
+
+      if (this.hiddenMentions.has(id)) {
+        return null;
+      }
+
+      if (this.parsedMentions[id]) {
+        return this.parsedMentions[id];
+      }
+
       var linkArgs = [];
       var spanTokens = this.data.tokens.slice(span.start, span.end);
 
@@ -1247,14 +1266,13 @@ var OdinsonParser = /*#__PURE__*/function () {
         });
       }); // Done; prepare the new Link
 
-      var linkId = this._generateId();
-
       var link = new _Link["default"]( // eventId
-      linkId, // Trigger
+      id, // Trigger
       trigger, // Arguments
       linkArgs, // Relation type
       relType);
       this.data.links.push(link);
+      this.parsedMentions[id] = link;
       return link;
     }
   }]);
@@ -44648,18 +44666,7 @@ var Main = (0, _autobindDecorator["default"])(_class = /*#__PURE__*/function () 
     value: function _hideMention(mention, parent) {
       if (this.parsers[this.parsedDataFormat].parsedMentions[mention]) {
         this.hiddenMentions.add(mention);
-        this.hiddenMentionsTree[parent].push(mention); // const currentMention = this.parsers[this.parsedDataFormat].parsedMentions[
-        //   mention
-        // ];
-        // if (currentMention.links.length === 1) {
-        //   this._hideMention(currentMention.links[0].eventId, parent);
-        // } else {
-        //   currentMention.links.forEach((link) => {
-        //     if (link.links.length > 0 || link.arguments.length > 1) {
-        //       this._hideMention(link.eventId, parent);
-        //     }
-        //   });
-        // }
+        this.hiddenMentionsTree[parent].push(mention);
       }
     }
   }, {
@@ -45420,6 +45427,7 @@ var Main = (0, _autobindDecorator["default"])(_class = /*#__PURE__*/function () 
       });
       this.svg.on("link-dbl-click", function (evt) {
         var eventId = evt.detail.object.eventId;
+        console.log(evt);
 
         _this4.toggleMention(eventId);
 

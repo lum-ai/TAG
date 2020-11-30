@@ -28,6 +28,10 @@ class OdinsonParser {
 
     /** @private */
     this.longLabelIdx = -1;
+
+    this.parsedMentions = {};
+    this.hiddenMentions = new Set();
+    this.availableMentions = new Map();
   }
 
   /**
@@ -39,11 +43,13 @@ class OdinsonParser {
    *
    * @returns {Object} Object containing the parsed tokens and the links
    */
-  parse(dataObject) {
+  parse(dataObject, hiddenMentions) {
     this.reset();
 
+    this.hiddenMentions = new Set(hiddenMentions);
     const toParse = Array.isArray(dataObject) ? dataObject[0] : dataObject;
 
+    this.data.words = toParse.words;
     this.parsedDocuments[0] = this._parseSentence(toParse, Date.now());
 
     toParse.match.forEach((mention) => {
@@ -69,6 +75,10 @@ class OdinsonParser {
     this.lastTokenIdx = -1;
 
     this.longLabelIdx = -1;
+
+    this.hiddenMentions = new Set();
+    this.availableMentions = new Map();
+    this.parsedMentions = {};
   }
 
   /**
@@ -217,6 +227,21 @@ class OdinsonParser {
 
   _parseMention({ mention, relType }) {
     const { span, captures } = mention;
+    const id = `${relType}-${span.start}-${span.end}`;
+
+    this.availableMentions.set(
+      id,
+      this.data.words.slice(span.start, span.end).join(" ")
+    );
+
+    if (this.hiddenMentions.has(id)) {
+      return null;
+    }
+
+    if (this.parsedMentions[id]) {
+      return this.parsedMentions[id];
+    }
+
     const linkArgs = [];
 
     const spanTokens = this.data.tokens.slice(span.start, span.end);
@@ -244,10 +269,9 @@ class OdinsonParser {
     });
 
     // Done; prepare the new Link
-    const linkId = this._generateId();
     const link = new Link(
       // eventId
-      linkId,
+      id,
       // Trigger
       trigger,
       // Arguments
@@ -257,6 +281,8 @@ class OdinsonParser {
     );
 
     this.data.links.push(link);
+
+    this.parsedMentions[id] = link;
 
     return link;
   }
