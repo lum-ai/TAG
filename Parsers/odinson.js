@@ -229,10 +229,7 @@ class OdinsonParser {
     const { span, captures } = mention;
     const id = `${relType}-${span.start}-${span.end}`;
 
-    this.availableMentions.set(
-      id,
-      this.data.words.slice(span.start, span.end).join(" ")
-    );
+    this.availableMentions.set(id, relType);
 
     if (this.hiddenMentions.has(id)) {
       return null;

@@ -1234,7 +1234,7 @@ var OdinsonParser = /*#__PURE__*/function () {
       var span = mention.span,
           captures = mention.captures;
       var id = "".concat(relType, "-").concat(span.start, "-").concat(span.end);
-      this.availableMentions.set(id, this.data.words.slice(span.start, span.end).join(" "));
+      this.availableMentions.set(id, relType);
 
       if (this.hiddenMentions.has(id)) {
         return null;
@@ -45427,7 +45427,6 @@ var Main = (0, _autobindDecorator["default"])(_class = /*#__PURE__*/function () 
       });
       this.svg.on("link-dbl-click", function (evt) {
         var eventId = evt.detail.object.eventId;
-        console.log(evt);
 
         _this4.toggleMention(eventId);
 
