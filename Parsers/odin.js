@@ -23,6 +23,9 @@ class OdinParser {
     // Old EventMentions/RelationMentions return their Link
     this.parsedMentions = {};
 
+    this.hiddenMentions = new Set();
+    this.availableMentions = new Map();
+
     // We record the index of the last Token from the previous sentence so
     // that we can generate each Word's global index (if not Token indices
     // will incorrectly restart from 0 for each new document/sentence)
@@ -34,7 +37,7 @@ class OdinParser {
    * @param {Array} dataObjects - Array of input data objects.  We expect
    *     there to be only one.
    */
-  parse(dataObjects) {
+  parse(dataObjects, hiddenMentions) {
     if (dataObjects.length > 1) {
       console.log(
         "Warning: Odin parser received multiple data objects. Only the first" +
@@ -46,6 +49,8 @@ class OdinParser {
 
     // Clear out any old parse data
     this.reset();
+
+    this.hiddenMentions = new Set(hiddenMentions);
 
     // At the top level, the data has two parts: `documents` and `mentions`.
     // - `documents` includes the tokens and dependency parses for each
@@ -67,6 +72,11 @@ class OdinParser {
     // There are a number of different types of mentions types:
     // - TextBoundMention
     // - EventMention
+
+    data.mentions.forEach((mention) => {
+      this.availableMentions.set(mention.id, mention.text);
+    });
+
     for (const mention of data.mentions) {
       this._parseMention(mention);
     }
@@ -88,6 +98,9 @@ class OdinParser {
     this.parsedDocuments = {};
     this.parsedMentions = {};
     this.lastTokenIdx = -1;
+
+    this.availableMentions = new Map();
+    this.hiddenMentions = new Set();
   }
 
   /**
@@ -231,6 +244,10 @@ class OdinParser {
      * @property {Object} mention.arguments
      */
 
+    if (this.hiddenMentions.has(mention.id)) {
+      return null;
+    }
+
     // Have we seen this one before?
     if (this.parsedMentions[mention.id]) {
       return this.parsedMentions[mention.id];
@@ -278,10 +295,13 @@ class OdinParser {
         for (const arg of args) {
           // Ensure that the argument mention has been parsed before
           const anchor = this._parseMention(arg);
-          linkArgs.push({
-            anchor,
-            type
-          });
+
+          if (anchor) {
+            linkArgs.push({
+              anchor,
+              type
+            });
+          }
         }
       }
 

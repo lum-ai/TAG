@@ -17,7 +17,7 @@ class OdinsonParser {
       tokens: [],
       links: [],
       clusters: [],
-      words: [],
+      words: []
     };
 
     /** @private */
@@ -61,7 +61,7 @@ class OdinsonParser {
   reset() {
     this.data = {
       tokens: [],
-      links: [],
+      links: []
     };
 
     this.parsedDocuments = {};

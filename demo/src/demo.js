@@ -230,7 +230,7 @@ $(async () => {
 
     for (const category of uiTag.getTagCategories()) {
       const checked = currentTopTags.indexOf(category) >= 0 ? "checked" : "";
-      const optionContainer = $("<div class=\"custom-control custom-checkbox\">");
+      const optionContainer = $('<div class="custom-control custom-checkbox">');
       const optionLabel = $(
         `<label class="custom-control-label" for="tag-option-top-tag-${category}">`
       ).html(category);
@@ -243,8 +243,7 @@ $(async () => {
 
         if ($this.checked) {
           uiTag.removeTopTagCategory(option.val());
-        }
-        else {
+        } else {
           uiTag.setTopTagCategory(option.val());
         }
       });
@@ -261,7 +260,7 @@ $(async () => {
 
     for (const category of uiTag.getTagCategories()) {
       const checked = currentBottomTags.indexOf(category) >= 0 ? "checked" : "";
-      const optionContainer = $("<div class=\"custom-control custom-checkbox\">");
+      const optionContainer = $('<div class="custom-control custom-checkbox">');
       const optionLabel = $(
         `<label class="custom-control-label" for="tag-option-bottom-tag-${category}">`
       ).html(category);
@@ -274,8 +273,7 @@ $(async () => {
 
         if ($this.checked) {
           uiTag.removeBottomTagCategory(option.val());
-        }
-        else {
+        } else {
           uiTag.setBottomTagCategory(option.val());
         }
       });
@@ -285,6 +283,44 @@ $(async () => {
 
       bottomTagsContainer.append(optionContainer);
     }
+
+    function displayMentions() {
+      const currentMentions = uiTag.mentions;
+      const { hiddenMentions } = uiTag;
+      const tagMentions = $("#tag-mentions-container");
+      tagMentions.html("");
+
+      for (const [mentionId, mentionText] of currentMentions.entries()) {
+        const optionContainer = $(
+          '<div class="custom-control custom-checkbox">'
+        );
+
+        const optionLabel = $(
+          `<label class="custom-control-label" for="tag-mention-${mentionId}">`
+        ).html(mentionText);
+
+        const isChecked = hiddenMentions.has(mentionId) ? "" : "checked";
+
+        const option = $(
+          `<input type="checkbox" class="custom-control-input" id="tag-mention-${mentionId}" ${isChecked}>`
+        ).attr("value", mentionId);
+
+        option.off("change").on("change", () => {
+          uiTag.toggleMention(option.val());
+        });
+
+        optionContainer.append(option);
+        optionContainer.append(optionLabel);
+
+        tagMentions.append(optionContainer);
+      }
+    }
+
+    displayMentions();
+
+    window.addEventListener("refresh-mentions", () => {
+      displayMentions();
+    });
   }
 
   refreshLinkAndTagCategories();

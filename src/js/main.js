@@ -65,6 +65,11 @@ class Main {
     this.links = [];
     this.wordClusters = [];
 
+    this.mentions = new Map();
+    this.hiddenMentions = new Set();
+    this.hiddenMentionsTree = {};
+    this.dataObjects = null;
+
     // Initialisation
     this.resize();
     this._setupSVGListeners();
@@ -80,7 +85,7 @@ class Main {
    * @param {String} format - One of the supported format identifiers for
    *     the data
    */
-  loadData(dataObjects, format) {
+  loadData(dataObjects, format, hiddenMentions = []) {
     // 1) Remove any currently-loaded data
     // 2) Parse the new data
     // 3) Hand-off the parsed data to the SVG initialisation procedure
@@ -91,8 +96,70 @@ class Main {
 
     this.clear();
 
-    this.parsedData = this.parsers[format].parse(dataObjects);
+    this.hiddenMentions = new Set(hiddenMentions);
+    this.dataObjects = dataObjects;
     this.parsedDataFormat = format;
+
+    this._parseData();
+
+    this.svgListeners = {};
+
+    this.init();
+    this.draw();
+  }
+
+  _parseData() {
+    this.parsedData = this.parsers[this.parsedDataFormat].parse(
+      this.dataObjects,
+      this.hiddenMentions
+    );
+
+    if (this.parsers[this.parsedDataFormat].availableMentions) {
+      this.mentions = this.parsers[this.parsedDataFormat].availableMentions;
+    }
+  }
+
+  _hideMention(mention, parent) {
+    if (this.parsers[this.parsedDataFormat].parsedMentions[mention]) {
+      this.hiddenMentions.add(mention);
+      this.hiddenMentionsTree[parent].push(mention);
+
+      // const currentMention = this.parsers[this.parsedDataFormat].parsedMentions[
+      //   mention
+      // ];
+
+      // if (currentMention.links.length === 1) {
+      //   this._hideMention(currentMention.links[0].eventId, parent);
+      // } else {
+      //   currentMention.links.forEach((link) => {
+      //     if (link.links.length > 0 || link.arguments.length > 1) {
+      //       this._hideMention(link.eventId, parent);
+      //     }
+      //   });
+      // }
+    }
+  }
+
+  toggleMention(mention) {
+    if (!this.mentions.has(mention)) {
+      return false;
+    }
+
+    if (this.hiddenMentions.has(mention)) {
+      this.hiddenMentions.delete(mention);
+
+      this.hiddenMentionsTree[mention].forEach((childMention) => {
+        this.hiddenMentions.delete(childMention);
+      });
+
+      delete this.hiddenMentionsTree[mention];
+    } else {
+      this.hiddenMentionsTree[mention] = [];
+      this._hideMention(mention, mention);
+    }
+
+    this.clear();
+    this._parseData();
 
     this.svgListeners = {};
 
@@ -107,9 +174,9 @@ class Main {
    * @param {String} format - One of the supported format identifiers for
    *     the data
    */
-  async loadUrlAsync(path, format) {
+  async loadUrlAsync(path, format, hiddenMentions = []) {
     const data = await $.ajax(path);
-    this.loadData([data], format);
+    this.loadData([data], format, hiddenMentions);
   }
 
   /**
@@ -567,7 +634,9 @@ class Main {
   }
 
   removeTopTagCategory(category) {
-    this.config.topTagCategories = this.config.topTagCategories.filter((topCategory) => topCategory !== category);
+    this.config.topTagCategories = this.config.topTagCategories.filter(
+      (topCategory) => topCategory !== category
+    );
 
     this.words.forEach((word) => {
       word.removeTopTagCategory(category);
@@ -602,7 +671,9 @@ class Main {
   }
 
   removeBottomTagCategory(category) {
-    this.config.bottomTagCategories = this.config.bottomTagCategories.filter((bottomCategory) => bottomCategory !== category);
+    this.config.bottomTagCategories = this.config.bottomTagCategories.filter(
+      (bottomCategory) => bottomCategory !== category
+    );
 
     this.words.forEach((word) => {
       word.removeBottomTagCategory(category);
@@ -734,6 +805,15 @@ class Main {
       });
     });
 
+    this.svg.on("link-dbl-click", (evt) => {
+      const { eventId } = evt.detail.object;
+
+      this.toggleMention(eventId);
+
+      const mentionEvt = new Event("refresh-mentions");
+      window.dispatchEvent(mentionEvt);
+    });
+
     // this.svg.on("tag-remove", (event) => {
     //   event.detail.object.remove();
     //   this.taxonomyManager.remove(event.detail.object);
@@ -793,8 +873,7 @@ class Main {
   addSvgListener(svgEvent, listener) {
     if (svgEvent in this.svgListeners) {
       this.svgListeners[svgEvent].push(listener);
-    }
-    else {
+    } else {
       this.svgListeners[svgEvent] = [listener];
     }
   }

@@ -1,0 +1,938 @@
+{
+    "documents": {
+        "522326688": {
+            "text": "How many TEUs of frozen zebras are heading to Milan from Tunisia?",
+            "sentences": [
+                {
+                    "words": [
+                        "How",
+                        "many",
+                        "TEUs",
+                        "of",
+                        "frozen",
+                        "zebras",
+                        "are",
+                        "heading",
+                        "to",
+                        "Milan",
+                        "from",
+                        "Tunisia",
+                        "?"
+                    ],
+                    "startOffsets": [
+                        0,
+                        4,
+                        9,
+                        14,
+                        17,
+                        24,
+                        31,
+                        35,
+                        43,
+                        46,
+                        52,
+                        57,
+                        64
+                    ],
+                    "endOffsets": [
+                        3,
+                        8,
+                        13,
+                        16,
+                        23,
+                        30,
+                        34,
+                        42,
+                        45,
+                        51,
+                        56,
+                        64,
+                        65
+                    ],
+                    "raw": [
+                        "How",
+                        "many",
+                        "TEUs",
+                        "of",
+                        "frozen",
+                        "zebras",
+                        "are",
+                        "heading",
+                        "to",
+                        "Milan",
+                        "from",
+                        "Tunisia",
+                        "?"
+                    ],
+                    "tags": [
+                        "WRB",
+                        "JJ",
+                        "NNS",
+                        "IN",
+                        "JJ",
+                        "NNS",
+                        "VBP",
+                        "VBG",
+                        "TO",
+                        "NNP",
+                        "IN",
+                        "NNP",
+                        "."
+                    ],
+                    "lemmas": [
+                        "how",
+                        "many",
+                        "teus",
+                        "of",
+                        "frozen",
+                        "zebra",
+                        "be",
+                        "head",
+                        "to",
+                        "Milan",
+                        "from",
+                        "Tunisia",
+                        "?"
+                    ],
+                    "entities": [
+                        "O",
+                        "O",
+                        "O",
+                        "O",
+                        "O",
+                        "O",
+                        "O",
+                        "O",
+                        "O",
+                        "B-LOC",
+                        "O",
+                        "B-LOC",
+                        "O"
+                    ],
+                    "graphs": {
+                        "universal-enhanced": {
+                            "edges": [
+                                {
+                                    "source": 7,
+                                    "destination": 2,
+                                    "relation": "nsubj"
+                                },
+                                {
+                                    "source": 9,
+                                    "destination": 8,
+                                    "relation": "case"
+                                },
+                                {
+                                    "source": 7,
+                                    "destination": 6,
+                                    "relation": "aux"
+                                },
+                                {
+                                    "source": 5,
+                                    "destination": 3,
+                                    "relation": "case"
+                                },
+                                {
+                                    "source": 2,
+                                    "destination": 1,
+                                    "relation": "amod"
+                                },
+                                {
+                                    "source": 2,
+                                    "destination": 5,
+                                    "relation": "nmod_of"
+                                },
+                                {
+                                    "source": 7,
+                                    "destination": 12,
+                                    "relation": "punct"
+                                },
+                                {
+                                    "source": 1,
+                                    "destination": 0,
+                                    "relation": "advmod"
+                                },
+                                {
+                                    "source": 5,
+                                    "destination": 4,
+                                    "relation": "amod"
+                                },
+                                {
+                                    "source": 7,
+                                    "destination": 11,
+                                    "relation": "nmod_from"
+                                },
+                                {
+                                    "source": 7,
+                                    "destination": 9,
+                                    "relation": "nmod_to"
+                                },
+                                {
+                                    "source": 11,
+                                    "destination": 10,
+                                    "relation": "case"
+                                }
+                            ],
+                            "roots": [
+                                7
+                            ]
+                        },
+                        "semantic-roles": {
+                            "edges": [
+                                {
+                                    "source": 1,
+                                    "destination": 2,
+                                    "relation": "A1"
+                                }
+                            ],
+                            "roots": [
+                                1
+                            ]
+                        },
+                        "universal-basic": {
+                            "edges": [
+                                {
+                                    "source": 7,
+                                    "destination": 2,
+                                    "relation": "nsubj"
+                                },
+                                {
+                                    "source": 9,
+                                    "destination": 8,
+                                    "relation": "case"
+                                },
+                                {
+                                    "source": 7,
+                                    "destination": 9,
+                                    "relation": "nmod"
+                                },
+                                {
+                                    "source": 7,
+                                    "destination": 6,
+                                    "relation": "aux"
+                                },
+                                {
+                                    "source": 5,
+                                    "destination": 3,
+                                    "relation": "case"
+                                },
+                                {
+                                    "source": 2,
+                                    "destination": 1,
+                                    "relation": "amod"
+                                },
+                                {
+                                    "source": 7,
+                                    "destination": 11,
+                                    "relation": "nmod"
+                                },
+                                {
+                                    "source": 7,
+                                    "destination": 12,
+                                    "relation": "punct"
+                                },
+                                {
+                                    "source": 1,
+                                    "destination": 0,
+                                    "relation": "advmod"
+                                },
+                                {
+                                    "source": 5,
+                                    "destination": 4,
+                                    "relation": "amod"
+                                },
+                                {
+                                    "source": 2,
+                                    "destination": 5,
+                                    "relation": "nmod"
+                                },
+                                {
+                                    "source": 11,
+                                    "destination": 10,
+                                    "relation": "case"
+                                }
+                            ],
+                            "roots": [
+                                7
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "mentions": [
+        {
+            "type": "TextBoundMention",
+            "id": "T:211031845",
+            "text": "Milan",
+            "labels": [
+                "Location",
+                "Concept",
+                "Entity"
+            ],
+            "tokenInterval": {
+                "start": 9,
+                "end": 10
+            },
+            "characterStartOffset": 46,
+            "characterEndOffset": 51,
+            "sentence": 0,
+            "document": "522326688",
+            "keep": true,
+            "foundBy": "loc-ner"
+        },
+        {
+            "type": "TextBoundMention",
+            "id": "T:79698272",
+            "text": "Tunisia",
+            "labels": [
+                "Location",
+                "Concept",
+                "Entity"
+            ],
+            "tokenInterval": {
+                "start": 11,
+                "end": 12
+            },
+            "characterStartOffset": 57,
+            "characterEndOffset": 64,
+            "sentence": 0,
+            "document": "522326688",
+            "keep": true,
+            "foundBy": "loc-ner"
+        },
+        {
+            "type": "TextBoundMention",
+            "id": "T:-1603124416",
+            "text": "frozen zebras",
+            "labels": [
+                "Concept",
+                "Entity"
+            ],
+            "tokenInterval": {
+                "start": 4,
+                "end": 6
+            },
+            "characterStartOffset": 17,
+            "characterEndOffset": 30,
+            "sentence": 0,
+            "document": "522326688",
+            "keep": true,
+            "foundBy": "base-concept-penn"
+        },
+        {
+            "type": "RelationMention",
+            "id": "R:-918293426",
+            "text": "TEUs of frozen zebras",
+            "labels": [
+                "QuantifiedCargo",
+                "Cargo",
+                "Concept",
+                "Entity"
+            ],
+            "arguments": {
+                "unit": [
+                    {
+                        "type": "TextBoundMention",
+                        "id": "T:2018884608",
+                        "text": "TEUs",
+                        "labels": [
+                            "Unit",
+                            "Measurement"
+                        ],
+                        "tokenInterval": {
+                            "start": 2,
+                            "end": 3
+                        },
+                        "characterStartOffset": 9,
+                        "characterEndOffset": 13,
+                        "sentence": 0,
+                        "document": "522326688",
+                        "keep": true,
+                        "foundBy": "units"
+                    }
+                ],
+                "concept": [
+                    {
+                        "type": "TextBoundMention",
+                        "id": "T:706175961",
+                        "text": "frozen zebras",
+                        "labels": [
+                            "Cargo",
+                            "Concept",
+                            "Entity"
+                        ],
+                        "tokenInterval": {
+                            "start": 4,
+                            "end": 6
+                        },
+                        "characterStartOffset": 17,
+                        "characterEndOffset": 30,
+                        "sentence": 0,
+                        "document": "522326688",
+                        "keep": true,
+                        "foundBy": "base-concept-penn"
+                    }
+                ]
+            },
+            "tokenInterval": {
+                "start": 2,
+                "end": 6
+            },
+            "characterStartOffset": 9,
+            "characterEndOffset": 30,
+            "sentence": 0,
+            "document": "522326688",
+            "keep": true,
+            "foundBy": "quantified-cargo"
+        },
+        {
+            "type": "TextBoundMention",
+            "id": "T:1064269127",
+            "text": "Tunisia",
+            "labels": [
+                "OriginConstraint",
+                "LocationConstraint",
+                "Constraint"
+            ],
+            "tokenInterval": {
+                "start": 11,
+                "end": 12
+            },
+            "characterStartOffset": 57,
+            "characterEndOffset": 64,
+            "sentence": 0,
+            "document": "522326688",
+            "keep": true,
+            "foundBy": "origin-contraint-1"
+        },
+        {
+            "type": "TextBoundMention",
+            "id": "T:-861043568",
+            "text": "Milan",
+            "labels": [
+                "DestinationConstraint",
+                "LocationConstraint",
+                "Constraint"
+            ],
+            "tokenInterval": {
+                "start": 9,
+                "end": 10
+            },
+            "characterStartOffset": 46,
+            "characterEndOffset": 51,
+            "sentence": 0,
+            "document": "522326688",
+            "keep": true,
+            "foundBy": "destination-contraint-1"
+        },
+        {
+            "type": "EventMention",
+            "id": "E:-551383426",
+            "text": "TEUs of frozen zebras are heading to Milan from Tunisia",
+            "labels": [
+                "Transport",
+                "Event"
+            ],
+            "trigger": {
+                "type": "TextBoundMention",
+                "id": "T:249757189",
+                "text": "heading",
+                "labels": [
+                    "Transport",
+                    "Event"
+                ],
+                "tokenInterval": {
+                    "start": 7,
+                    "end": 8
+                },
+                "characterStartOffset": 35,
+                "characterEndOffset": 42,
+                "sentence": 0,
+                "document": "522326688",
+                "keep": true,
+                "foundBy": "transport-1-syntax"
+            },
+            "arguments": {
+                "shipment": [
+                    {
+                        "type": "RelationMention",
+                        "id": "R:-918293426",
+                        "text": "TEUs of frozen zebras",
+                        "labels": [
+                            "QuantifiedCargo",
+                            "Cargo",
+                            "Concept",
+                            "Entity"
+                        ],
+                        "arguments": {
+                            "unit": [
+                                {
+                                    "type": "TextBoundMention",
+                                    "id": "T:2018884608",
+                                    "text": "TEUs",
+                                    "labels": [
+                                        "Unit",
+                                        "Measurement"
+                                    ],
+                                    "tokenInterval": {
+                                        "start": 2,
+                                        "end": 3
+                                    },
+                                    "characterStartOffset": 9,
+                                    "characterEndOffset": 13,
+                                    "sentence": 0,
+                                    "document": "522326688",
+                                    "keep": true,
+                                    "foundBy": "units"
+                                }
+                            ],
+                            "concept": [
+                                {
+                                    "type": "TextBoundMention",
+                                    "id": "T:706175961",
+                                    "text": "frozen zebras",
+                                    "labels": [
+                                        "Cargo",
+                                        "Concept",
+                                        "Entity"
+                                    ],
+                                    "tokenInterval": {
+                                        "start": 4,
+                                        "end": 6
+                                    },
+                                    "characterStartOffset": 17,
+                                    "characterEndOffset": 30,
+                                    "sentence": 0,
+                                    "document": "522326688",
+                                    "keep": true,
+                                    "foundBy": "base-concept-penn"
+                                }
+                            ]
+                        },
+                        "tokenInterval": {
+                            "start": 2,
+                            "end": 6
+                        },
+                        "characterStartOffset": 9,
+                        "characterEndOffset": 30,
+                        "sentence": 0,
+                        "document": "522326688",
+                        "keep": true,
+                        "foundBy": "quantified-cargo"
+                    }
+                ],
+                "origin": [
+                    {
+                        "type": "TextBoundMention",
+                        "id": "T:79698272",
+                        "text": "Tunisia",
+                        "labels": [
+                            "Location",
+                            "Concept",
+                            "Entity"
+                        ],
+                        "tokenInterval": {
+                            "start": 11,
+                            "end": 12
+                        },
+                        "characterStartOffset": 57,
+                        "characterEndOffset": 64,
+                        "sentence": 0,
+                        "document": "522326688",
+                        "keep": true,
+                        "foundBy": "loc-ner"
+                    }
+                ],
+                "destination": [
+                    {
+                        "type": "TextBoundMention",
+                        "id": "T:211031845",
+                        "text": "Milan",
+                        "labels": [
+                            "Location",
+                            "Concept",
+                            "Entity"
+                        ],
+                        "tokenInterval": {
+                            "start": 9,
+                            "end": 10
+                        },
+                        "characterStartOffset": 46,
+                        "characterEndOffset": 51,
+                        "sentence": 0,
+                        "document": "522326688",
+                        "keep": true,
+                        "foundBy": "loc-ner"
+                    }
+                ]
+            },
+            "paths": {
+                "shipment": {
+                    "R:-918293426": [
+                        {
+                            "source": 7,
+                            "destination": 2,
+                            "relation": "nsubj"
+                        },
+                        {
+                            "source": 2,
+                            "destination": 5,
+                            "relation": "nmod_of"
+                        }
+                    ],
+                    "T:-1603124416": [
+                        {
+                            "source": 7,
+                            "destination": 2,
+                            "relation": "nsubj"
+                        },
+                        {
+                            "source": 2,
+                            "destination": 5,
+                            "relation": "nmod_of"
+                        }
+                    ]
+                },
+                "origin": {
+                    "T:79698272": [
+                        {
+                            "source": 7,
+                            "destination": 11,
+                            "relation": "nmod_from"
+                        }
+                    ]
+                },
+                "destination": {
+                    "T:211031845": [
+                        {
+                            "source": 7,
+                            "destination": 9,
+                            "relation": "nmod_to"
+                        }
+                    ]
+                }
+            },
+            "tokenInterval": {
+                "start": 2,
+                "end": 12
+            },
+            "characterStartOffset": 9,
+            "characterEndOffset": 64,
+            "sentence": 0,
+            "document": "522326688",
+            "keep": true,
+            "foundBy": "transport-1-syntax"
+        },
+        {
+            "type": "TextBoundMention",
+            "id": "T:2018884608",
+            "text": "TEUs",
+            "labels": [
+                "Unit",
+                "Measurement"
+            ],
+            "tokenInterval": {
+                "start": 2,
+                "end": 3
+            },
+            "characterStartOffset": 9,
+            "characterEndOffset": 13,
+            "sentence": 0,
+            "document": "522326688",
+            "keep": true,
+            "foundBy": "units"
+        },
+        {
+            "type": "EventMention",
+            "id": "E:1038939154",
+            "text": "How many TEUs of frozen zebras are heading to Milan from Tunisia",
+            "labels": [
+                "CargoQuery",
+                "QuantityQuery",
+                "Query"
+            ],
+            "trigger": {
+                "type": "TextBoundMention",
+                "id": "T:-705142871",
+                "text": "How many",
+                "labels": [
+                    "QuantityQuery",
+                    "Query"
+                ],
+                "tokenInterval": {
+                    "start": 0,
+                    "end": 2
+                },
+                "characterStartOffset": 0,
+                "characterEndOffset": 8,
+                "sentence": 0,
+                "document": "522326688",
+                "keep": true,
+                "foundBy": "quantity-query-1"
+            },
+            "arguments": {
+                "need": [
+                    {
+                        "type": "RelationMention",
+                        "id": "R:-918293426",
+                        "text": "TEUs of frozen zebras",
+                        "labels": [
+                            "QuantifiedCargo",
+                            "Cargo",
+                            "Concept",
+                            "Entity"
+                        ],
+                        "arguments": {
+                            "unit": [
+                                {
+                                    "type": "TextBoundMention",
+                                    "id": "T:2018884608",
+                                    "text": "TEUs",
+                                    "labels": [
+                                        "Unit",
+                                        "Measurement"
+                                    ],
+                                    "tokenInterval": {
+                                        "start": 2,
+                                        "end": 3
+                                    },
+                                    "characterStartOffset": 9,
+                                    "characterEndOffset": 13,
+                                    "sentence": 0,
+                                    "document": "522326688",
+                                    "keep": true,
+                                    "foundBy": "units"
+                                }
+                            ],
+                            "concept": [
+                                {
+                                    "type": "TextBoundMention",
+                                    "id": "T:706175961",
+                                    "text": "frozen zebras",
+                                    "labels": [
+                                        "Cargo",
+                                        "Concept",
+                                        "Entity"
+                                    ],
+                                    "tokenInterval": {
+                                        "start": 4,
+                                        "end": 6
+                                    },
+                                    "characterStartOffset": 17,
+                                    "characterEndOffset": 30,
+                                    "sentence": 0,
+                                    "document": "522326688",
+                                    "keep": true,
+                                    "foundBy": "base-concept-penn"
+                                }
+                            ]
+                        },
+                        "tokenInterval": {
+                            "start": 2,
+                            "end": 6
+                        },
+                        "characterStartOffset": 9,
+                        "characterEndOffset": 30,
+                        "sentence": 0,
+                        "document": "522326688",
+                        "keep": true,
+                        "foundBy": "quantified-cargo"
+                    }
+                ],
+                "predicate": [
+                    {
+                        "type": "TextBoundMention",
+                        "id": "T:2001255062",
+                        "text": "heading",
+                        "labels": [
+                            "Verb",
+                            "VerbPhrase",
+                            "XP",
+                            "Sentence"
+                        ],
+                        "tokenInterval": {
+                            "start": 7,
+                            "end": 8
+                        },
+                        "characterStartOffset": 35,
+                        "characterEndOffset": 42,
+                        "sentence": 0,
+                        "document": "522326688",
+                        "keep": true,
+                        "foundBy": "verb"
+                    }
+                ],
+                "constraints": [
+                    {
+                        "type": "TextBoundMention",
+                        "id": "T:1064269127",
+                        "text": "Tunisia",
+                        "labels": [
+                            "OriginConstraint",
+                            "LocationConstraint",
+                            "Constraint"
+                        ],
+                        "tokenInterval": {
+                            "start": 11,
+                            "end": 12
+                        },
+                        "characterStartOffset": 57,
+                        "characterEndOffset": 64,
+                        "sentence": 0,
+                        "document": "522326688",
+                        "keep": true,
+                        "foundBy": "origin-contraint-1"
+                    },
+                    {
+                        "type": "TextBoundMention",
+                        "id": "T:-861043568",
+                        "text": "Milan",
+                        "labels": [
+                            "DestinationConstraint",
+                            "LocationConstraint",
+                            "Constraint"
+                        ],
+                        "tokenInterval": {
+                            "start": 9,
+                            "end": 10
+                        },
+                        "characterStartOffset": 46,
+                        "characterEndOffset": 51,
+                        "sentence": 0,
+                        "document": "522326688",
+                        "keep": true,
+                        "foundBy": "destination-contraint-1"
+                    }
+                ]
+            },
+            "paths": {
+                "need": {
+                    "R:-918293426": [
+                        {
+                            "source": 2,
+                            "destination": 1,
+                            "relation": "amod"
+                        },
+                        {
+                            "source": 2,
+                            "destination": 5,
+                            "relation": "nmod_of"
+                        }
+                    ],
+                    "T:-1603124416": [
+                        {
+                            "source": 2,
+                            "destination": 1,
+                            "relation": "amod"
+                        },
+                        {
+                            "source": 2,
+                            "destination": 5,
+                            "relation": "nmod_of"
+                        }
+                    ]
+                },
+                "predicate": {
+                    "T:2001255062": [
+                        {
+                            "source": 2,
+                            "destination": 1,
+                            "relation": "amod"
+                        },
+                        {
+                            "source": 7,
+                            "destination": 2,
+                            "relation": "nsubj"
+                        }
+                    ]
+                },
+                "constraints": {
+                    "T:1064269127": [
+                        {
+                            "source": 2,
+                            "destination": 1,
+                            "relation": "amod"
+                        },
+                        {
+                            "source": 7,
+                            "destination": 2,
+                            "relation": "nsubj"
+                        },
+                        {
+                            "source": 7,
+                            "destination": 11,
+                            "relation": "nmod_from"
+                        }
+                    ],
+                    "T:-861043568": [
+                        {
+                            "source": 2,
+                            "destination": 1,
+                            "relation": "amod"
+                        },
+                        {
+                            "source": 7,
+                            "destination": 2,
+                            "relation": "nsubj"
+                        },
+                        {
+                            "source": 7,
+                            "destination": 9,
+                            "relation": "nmod_to"
+                        }
+                    ]
+                }
+            },
+            "tokenInterval": {
+                "start": 0,
+                "end": 12
+            },
+            "characterStartOffset": 0,
+            "characterEndOffset": 64,
+            "sentence": 0,
+            "document": "522326688",
+            "keep": true,
+            "foundBy": "quantity-query-1"
+        },
+        {
+            "type": "TextBoundMention",
+            "id": "T:1562654713",
+            "text": "many",
+            "labels": [
+                "Quantifier",
+                "Sentence"
+            ],
+            "tokenInterval": {
+                "start": 1,
+                "end": 2
+            },
+            "characterStartOffset": 4,
+            "characterEndOffset": 8,
+            "sentence": 0,
+            "document": "522326688",
+            "keep": true,
+            "foundBy": "quantifier-1"
+        },
+        {
+            "type": "TextBoundMention",
+            "id": "T:312528482",
+            "text": "heading",
+            "labels": [
+                "TransportTrigger",
+                "Trigger"
+            ],
+            "tokenInterval": {
+                "start": 7,
+                "end": 8
+            },
+            "characterStartOffset": 35,
+            "characterEndOffset": 42,
+            "sentence": 0,
+            "document": "522326688",
+            "keep": true,
+            "foundBy": "transport-trigger-1"
+        }
+    ]
+}
