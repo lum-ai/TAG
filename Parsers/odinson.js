@@ -52,7 +52,7 @@ class OdinsonParser {
     this.data.words = toParse.words;
     this.parsedDocuments[0] = this._parseSentence(toParse, Date.now());
 
-    toParse.match.forEach((mention) => {
+    (toParse.match || toParse.matches).forEach((mention) => {
       this._parseMention({ mention, relType: toParse.label });
     });
 

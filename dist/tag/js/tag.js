@@ -1095,7 +1095,7 @@ var OdinsonParser = /*#__PURE__*/function () {
       var toParse = Array.isArray(dataObject) ? dataObject[0] : dataObject;
       this.data.words = toParse.words;
       this.parsedDocuments[0] = this._parseSentence(toParse, Date.now());
-      toParse.match.forEach(function (mention) {
+      (toParse.match || toParse.matches).forEach(function (mention) {
         _this._parseMention({
           mention: mention,
           relType: toParse.label
